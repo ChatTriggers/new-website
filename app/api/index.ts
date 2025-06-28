@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
+import { PrismaClient, Rank } from "app/../prisma/generated/client";
 import type { Session } from "app/api";
-import { type Prisma, PrismaClient, Rank } from "prisma/generated/client";
 
 export interface PublicModule {
   id: string;
@@ -290,7 +290,7 @@ export type RelationalModule<T extends keyof ModuleRelations = never> = Module &
 //   (T extends "releases" ? { releases: Release[] } : Record<string, never>) &
 //   (T extends "user" ? { user: User } : Record<string, never>);
 
-export { EmailType, Rank } from "prisma/generated/client";
-export type { Prisma } from "prisma/generated/client";
+export { EmailType, Rank } from "prisma-generated-client";
+export type { Prisma } from "prisma-generated-client";
 
 export * from "./(utils)";
