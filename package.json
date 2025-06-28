@@ -1,18 +1,19 @@
 {
   "private": true,
+  "packageManager": "pnpm@10.12.4",
   "type": "module",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "lint": "npx biome check",
-    "prisma-generate": "dotenv -e .env.local npx prisma generate",
-    "prisma-sync-db": "dotenv -e .env.local npx prisma db push",
-    "prisma-seed": "npx prisma db seed",
-    "prisma-migrate-legacy-db": "dotenv -e .env.local npx tsx prisma/scripts/migrate.ts"
+    "lint": "pnpx biome check",
+    "prisma-generate": "dotenv -e .env.local pnpx prisma generate",
+    "prisma-sync-db": "dotenv -e .env.local pnpx prisma db push",
+    "prisma-seed": "pnpx prisma db seed",
+    "prisma-migrate-legacy-db": "dotenv -e .env.local pnpx tsx prisma/scripts/migrate.ts"
   },
   "prisma": {
-    "seed": "dotenv -e .env.local npx tsx prisma/scripts/seed.ts"
+    "seed": "dotenv -e .env.local pnpx tsx prisma/scripts/seed.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -69,6 +70,5 @@
     "dotenv-cli": "^7.4.2",
     "lefthook": "^1.6.18",
     "typescript": "^5.2.2"
-  },
-  "packageManager": "yarn@3.6.4"
+  }
 }

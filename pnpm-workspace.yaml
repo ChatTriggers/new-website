@@ -1,0 +1,14 @@
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - '@parcel/watcher'
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@scarf/scarf'
+  - '@tree-sitter-grammars/tree-sitter-yaml'
+  - bcrypt
+  - core-js-pure
+  - lefthook
+  - prisma
+  - tree-sitter
+  - tree-sitter-json
+  - zlib-sync
