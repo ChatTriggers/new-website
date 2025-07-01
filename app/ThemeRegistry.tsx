@@ -169,6 +169,7 @@ export default function ThemeRegistry({ children }: Props) {
   });
 
   return (
+    // @ts-ignore
     <CacheProvider value={cache}>
       <MaterialCssVarsProvider defaultMode="dark" theme={{ [MATERIAL_THEME_ID]: materialTheme }}>
         <JoyCssVarsProvider defaultMode="dark" theme={joyTheme}>
