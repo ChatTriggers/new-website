@@ -56,19 +56,13 @@ export const sendPasswordResetEmail = async (user: User) => {
 
   const params = new EmailParams()
     .setTemplateId(process.env.MAILERSEND_PASSWORD_RESET_TEMPLATE_ID ?? "unreachable")
-    .setVariables([
+    .setPersonalization([
       {
         email: user.email,
-        substitutions: [
-          {
-            var: "name",
-            value: user.name,
-          },
-          {
-            var: "reset_link",
-            value: `${process.env.NEXT_PUBLIC_WEB_ROOT}/auth/resetpassword?token=${passwordResetToken}`,
-          },
-        ],
+        data: {
+          name: user.name,
+          reset_link: `${process.env.NEXT_PUBLIC_WEB_ROOT}/auth/resetpassword?token=${passwordResetToken}`,
+        },
       },
     ]);
 
@@ -91,19 +85,13 @@ export const sendVerificationEmail = async (user: User) => {
 
   const params = new EmailParams()
     .setTemplateId(process.env.MAILERSEND_VERIFICATION_TEMPLATE_ID ?? "unreachable")
-    .setVariables([
+    .setPersonalization([
       {
         email: user.email,
-        substitutions: [
-          {
-            var: "name",
-            value: user.name,
-          },
-          {
-            var: "verification_link",
-            value: `${process.env.NEXT_PUBLIC_WEB_ROOT}/users/${user.name}/verify?token=${verificationToken}`,
-          },
-        ],
+        data: {
+          name: user.name,
+          verification_link: `${process.env.NEXT_PUBLIC_WEB_ROOT}/users/${user.name}/verify?token=${verificationToken}`,
+        },
       },
     ]);
 
