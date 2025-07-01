@@ -9,6 +9,7 @@ onlyBuiltDependencies:
   - core-js-pure
   - lefthook
   - prisma
+  - sharp
   - tree-sitter
   - tree-sitter-json
   - zlib-sync
