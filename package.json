@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "start": "next start",
-    "lint": "pnpx biome check",
+    "lint": "pnpx @biomejs/biome check",
     "prisma-generate": "dotenv -e .env.local pnpx prisma generate",
     "prisma-sync-db": "dotenv -e .env.local pnpx prisma db push",
     "prisma-seed": "pnpx prisma db seed",
@@ -61,7 +61,6 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.3",
     "@faker-js/faker": "^8.4.1",
     "@types/cli-progress": "^3.11.6",
     "@types/node": "20.8.0",
