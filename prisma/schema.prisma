@@ -15,7 +15,7 @@ model Module {
   name        String    @unique @db.VarChar(64)
   summary     String?   @db.VarChar(300)
   description String?   @db.Text
-  image       String?   @db.VarChar(64)
+  hasImage    Boolean   @default(false)
   downloads   Int       @default(0)
   hidden      Boolean   @default(false)
   tags        String?   @db.VarChar(200) // comma-separated array
@@ -51,7 +51,7 @@ model User {
   last_name_change_time DateTime?
   verification_token    String?
   password_reset_token  String?
-  image                 String?        @db.VarChar(128)
+  hasImage              Boolean        @default(false)
   rank                  Rank           @default(default)
   notifications         Notification[]
   modules               Module[]

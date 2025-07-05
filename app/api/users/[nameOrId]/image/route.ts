@@ -1,16 +1,23 @@
 import * as fs from "node:fs/promises";
 import type { SlugProps } from "app/(utils)/next";
+import { db } from "app/api";
 import { NotFoundError, route, storage } from "app/api/(utils)";
 import * as modules from "app/api/modules";
 import type { NextRequest } from "next/server";
 
 export const GET = route(async (req: NextRequest, { params }: SlugProps<"nameOrId">) => {
-  const module = await modules.getOne(params.nameOrId);
-  if (!module) throw new NotFoundError("Module not found");
+  const user = await db.user.findFirst({
+    where: {
+      OR: [{ id: params.nameOrId }, { name: params.nameOrId }],
+    },
+  });
+  if (!user) return new Response("User not found", { status: 404 });
 
-  const image = await storage.getImage("module", module.name);
-  if (image) {
-    return new Response(image);
+  if (user.hasImage) {
+    const image = await storage.getImage("user", user.name);
+    if (image) {
+      return new Response(image);
+    }
   }
 
   return new Response(null, { status: 204 });

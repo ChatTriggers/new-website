@@ -119,3 +119,4 @@ export * from "./email";
 export * from "./errors";
 export * from "./session";
 export * from "./Version";
+export * from "./storage";

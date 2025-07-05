@@ -16,10 +16,11 @@ import {
   route,
 } from "app/api";
 import { getAllowedVersions } from "app/api";
-import { type Module, Rank, type Release, db } from "app/api";
+import { Rank, type Release, db } from "app/api";
 import Version from "app/api/(utils)/Version";
 import { onReleaseCreated, onReleaseNeedsToBeVerified } from "app/api/(utils)/webhooks";
 import * as modules from "app/api/modules";
+import { storage } from "app/api/(utils)";
 import JSZip from "jszip";
 import type { NextRequest } from "next/server";
 
@@ -108,55 +109,45 @@ async function saveZipFile(
   release: Release,
   zipFile: File,
 ): Promise<void> {
-  const releaseFolder = `storage/modules/${module.name}/${release.id}`;
-  await fs.mkdir(releaseFolder, { recursive: true });
+  let zip = await JSZip.loadAsync(await zipFile.arrayBuffer());
+
+  // If the user uploaded a zip file with a single directory, we need to unwrap it
+  const singleDir = zip.folder(module.name);
+  if (singleDir) zip = singleDir;
+
+  const metadataFile = zip.file("metadata.json");
+  if (!metadataFile) throw new ClientError("zip file has no metadata.json file");
+
+  // Normalize the metadata file
+  let metadata: modules.Metadata;
+  try {
+    metadata = JSON.parse(await metadataFile.async("text"));
+  } catch {
+    throw new ClientError("Invalid metadata.json file");
+  }
+
+  metadata.name = module.name;
+  metadata.version = release.release_version;
+  metadata.tags = module.tags ? module.tags.split(",") : undefined;
+  metadata.pictureLink = module.hasImage ? await storage.getImageUrl("module", module.name) : undefined;
+  metadata.creator = module.user.name;
+  metadata.author = undefined;
+  metadata.description = module.description ?? undefined;
+  metadata.changelog;
+
+  const metadataStr = JSON.stringify(metadata, null, 2);
+
+  zip.remove("metadata.json");
+  zip.file("metadata.json", metadataStr);
 
   try {
-    let zip = await JSZip.loadAsync(await zipFile.arrayBuffer());
-
-    // If the user uploaded a zip file with a single directory, we need to unwrap it
-    const singleDir = zip.folder(module.name);
-    if (singleDir) zip = singleDir;
-
-    const metadataFile = zip.file("metadata.json");
-    if (!metadataFile) throw new ClientError("zip file has no metadata.json file");
-
-    // Normalize the metadata file
-    let metadata: modules.Metadata;
-    try {
-      metadata = JSON.parse(await metadataFile.async("text"));
-    } catch {
-      throw new ClientError("Invalid metadata.json file");
-    }
-
-    metadata.name = module.name;
-    metadata.version = release.release_version;
-    metadata.tags = module.tags ? module.tags.split(",") : undefined;
-    if (module.image) {
-      metadata.pictureLink = `${process.env.NEXT_PUBLIC_WEB_ROOT}/${module.image}`;
-    } else {
-      metadata.pictureLink = undefined;
-    }
-    metadata.creator = module.user.name;
-    metadata.author = undefined;
-    metadata.description = module.description ?? undefined;
-    metadata.changelog;
-
-    const metadataStr = JSON.stringify(metadata, null, 2);
-
-    zip.remove("metadata.json");
-    zip.file("metadata.json", metadataStr);
-
     // Save to storage folder
-    await fs.writeFile(
-      `${releaseFolder}/scripts.zip`,
-      await zip.generateAsync({ type: "uint8array" }),
-    );
+    await storage.setReleaseFile("scripts", module.name, release.id, await zip.generateAsync({ type: "uint8array" }));
 
     // Also save the metadata file separately for quick access
-    await fs.writeFile(`${releaseFolder}/metadata.json`, metadataStr);
+    await storage.setReleaseFile("metadata", module.name, release.id, metadataStr);
   } catch (e) {
-    await fs.rm(releaseFolder, { recursive: true });
+    await storage.deleteRelease(module.name, release.id);
     throw e;
   }
 }

@@ -162,10 +162,10 @@ export default function Header({ module, ownerView, hideUser }: HeaderProps) {
             )}
           </Stack>
           <Stack direction="row">
-            {module.image && (
+            {module.hasImage ? (
               <Box display={{ mobile: "none", tablet: "flex" }} alignItems="center" mx={3}>
                 <img
-                  src={module.image}
+                  src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${module.name}/image`}
                   alt="module icon"
                   style={{
                     maxHeight: 100,
@@ -175,7 +175,7 @@ export default function Header({ module, ownerView, hideUser }: HeaderProps) {
                   }}
                 />
               </Box>
-            )}
+            ) : null}
             <Stack
               display={{ mobile: "none", desktop: "flex" }}
               alignItems="start"

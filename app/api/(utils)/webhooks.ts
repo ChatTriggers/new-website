@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "@discordjs/builders";
-import type { Module, RelationalModule, Release } from "app/api";
+import { storage, type Module, type RelationalModule, type Release } from "app/api";
 import { WebhookClient } from "discord.js";
 
 let announceClient: WebhookClient | null = null;
@@ -33,7 +33,9 @@ export const onModuleCreated = async (module: RelationalModule<"user">) => {
 
   if (module.summary) embed.addFields({ name: "Summary", value: module.summary });
 
-  if (module.image) embed.setImage(`${process.env.NEXT_PUBLIC_WEB_ROOT}/${module.image}`);
+  if (module.hasImage) {
+    embed.setImage(`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${module.name}/image`);
+  }
 
   const client = getAnnounceClient();
   if (client) {

@@ -3,6 +3,8 @@ import { faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
 import JSZip from "jszip";
 import { type Module, PrismaClient, Rank, type Release, type User } from "../generated/client";
+import { storage } from "../../app/api/(utils)";
+import sharp from "sharp";
 
 const versions = [
   "0.18.4",
@@ -24,15 +26,15 @@ const versions = [
 const db = new PrismaClient();
 
 // Remove all existing data
+console.log('Removing all DB data');
 await db.email.deleteMany({});
 await db.notification.deleteMany({});
 await db.release.deleteMany({});
 await db.module.deleteMany({});
 await db.user.deleteMany({});
 
-await fs.rm("./storage", { recursive: true });
-await fs.mkdir("./storage/modules", { recursive: true });
-await fs.mkdir("./storage/users", { recursive: true });
+console.log('Removing all storage');
+await storage.deleteEverything();
 
 function randomModuleName() {
   let name = "";
@@ -50,13 +52,12 @@ function randomModuleName() {
   return name;
 }
 
-async function randomImage(saveLocation: string) {
+async function randomImage() {
   return await faker.helpers.maybe(
     async () => {
       const url = faker.image.url();
       const image = await fetch(url);
-      await fs.writeFile(saveLocation, Buffer.from(await image.arrayBuffer()));
-      return saveLocation;
+      return await image.arrayBuffer();
     },
     { probability: 0.3 },
   );
@@ -146,7 +147,11 @@ const numUsers = faker.number.int({ min: 15, max: 30 });
 
 for (let i = 0; i < numUsers; i++) {
   const username = faker.internet.userName();
-  const imagePath = await randomImage(`./storage/users/${username}.png`);
+  console.log(`Creating user ${username}`);
+  const image = await randomImage();
+  if (image) {
+    await storage.setImage("user", username, sharp(image));
+  }
 
   const user = await db.user.create({
     data: {
@@ -154,12 +159,12 @@ for (let i = 0; i < numUsers; i++) {
       email_verified: faker.datatype.boolean(0.85),
       name: username,
       password: bcrypt.hashSync(faker.internet.password(), bcrypt.genSaltSync()),
-      image: imagePath,
       last_name_change_time: faker.helpers.maybe(
         () => faker.date.between({ from: new Date(2024, 0), to: Date.now() }),
         { probability: 0.1 },
       ),
       password_reset_token: null,
+      hasImage: !!image,
       verification_token: null,
       rank: faker.helpers.enumValue(Rank),
     },
@@ -175,20 +180,23 @@ const numModules = numUsers + faker.number.int({ min: 5, max: 20 });
 
 for (let i = 0; i < numModules; i++) {
   const moduleName = randomModuleName();
-  await fs.mkdir(`./storage/modules/${moduleName}`);
-  const imagePath = await randomImage(`./storage/modules/${moduleName}/image.png`);
+  console.log(`Creating module ${moduleName}`);
+  const image = await randomImage();
+  if (image) {
+    await storage.setImage("module", moduleName, sharp(image));
+  }
 
   const module = await db.module.create({
     data: {
       name: moduleName,
       summary: faker.helpers.maybe(faker.lorem.sentence, { probability: 0.7 }),
       description: faker.helpers.maybe(faker.lorem.text, { probability: 0.7 }),
+      hasImage: !!image,
       tags: faker.helpers
         .maybe(() => faker.helpers.arrayElements(validTags), { probability: 0.5 })
         ?.join(","),
       downloads: 0, // Incremented as releases are made
       hidden: faker.datatype.boolean(0.1),
-      image: imagePath,
       user_id: faker.helpers.arrayElement(Array.from(userIds)),
     },
   });
@@ -205,6 +213,7 @@ for (let i = 0; i < numReleases; i++) {
     where: { id: moduleId },
     include: { user: true },
   });
+  console.log(`Creating release for module ${module.name}`);
   const verified = faker.datatype.boolean(0.8);
 
   // Simulate old releases that don't have a verifier
@@ -221,7 +230,7 @@ for (let i = 0; i < numReleases; i++) {
   const release = await db.release.create({
     data: {
       module_id: moduleId,
-      mod_version: faker.helpers.arrayElement(Object.keys(versions.mod_versions)),
+      mod_version: faker.helpers.arrayElement(versions),
       release_version: faker.system.semver(),
       changelog: faker.helpers.maybe(faker.lorem.text, { probability: 0.3 }),
       downloads: faker.number.int({ min: 0, max: 1000 }),
@@ -232,9 +241,8 @@ for (let i = 0; i < numReleases; i++) {
   });
 
   const { scripts, metadata } = await randomScripts(module, release, module.user);
-  await fs.mkdir(`./storage/modules/${module.name}/${release.id}`);
-  await fs.writeFile(`./storage/modules/${module.name}/${release.id}/scripts.zip`, scripts);
-  await fs.writeFile(`./storage/modules/${module.name}/${release.id}/metadata.json`, metadata);
+  await storage.setReleaseFile("scripts", module.name, release.id, scripts);
+  await storage.setReleaseFile("metadata", module.name, release.id, metadata);
 
   await db.module.update({
     where: {
@@ -247,3 +255,5 @@ for (let i = 0; i < numReleases; i++) {
     },
   });
 }
+
+console.log('Done!');

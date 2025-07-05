@@ -2,6 +2,7 @@ import * as fs from "node:fs/promises";
 import type { RelationalModule } from "app/api";
 import { type Module, type Release, db } from "app/api";
 import * as modules from "app/api/modules";
+import { storage } from "app/api/(utils)";
 
 export async function getScripts(
   moduleOrIdentifier: Module | RelationalModule<"releases"> | string,
@@ -32,7 +33,7 @@ export async function getScripts(
 
   for (const release of releases) {
     if (release.id === releaseId) {
-      const result = await fs.readFile(`storage/modules/${moduleName}/${release.id}/scripts.zip`);
+      const result = await storage.getReleaseFile("scripts", moduleName, release.id);
 
       // Increment download counters
       await db.module.update({
@@ -78,6 +79,6 @@ export async function getMetadata(
 
   for (const release of releases) {
     if (release.id === releaseId)
-      return await fs.readFile(`storage/modules/${moduleName}/${release.id}/metadata.json`);
+      return await storage.getReleaseFile("metadata", moduleName, release.id);
   }
 }

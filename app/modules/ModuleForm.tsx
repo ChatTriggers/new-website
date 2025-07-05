@@ -135,7 +135,8 @@ export default function ModuleForm({ editingModule, availableTags, onSubmit }: P
   const [error, setError] = useState<string | undefined>();
   const [createLoading, setCreateLoading] = useState(false);
 
-  const [imageUrl, setImageUrl] = useState(editingModule?.image ?? undefined);
+  const [imageUrl, setImageUrl] = useState(
+    editingModule?.hasImage ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${editingModule.name}/image` : undefined);
 
   const setUploadedImage = (file?: File) => {
     if (!file) return;

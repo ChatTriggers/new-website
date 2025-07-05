@@ -80,7 +80,7 @@ function AccountIcon({ user }: Props) {
     avatar = (
       <Avatar
         size="sm"
-        src={user.image ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/${user.image}` : undefined}
+        src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image`}
       />
     );
 

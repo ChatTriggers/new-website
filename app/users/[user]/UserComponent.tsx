@@ -43,9 +43,9 @@ interface UserProps {
 function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
-  const [avatarSrc, setAvatarSrc] = useState(
-    user.image ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/${user.image}` : null,
-  );
+
+  const defaultImagePath = user.hasImage ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image` : null;
+  const [avatarSrc, setAvatarSrc] = useState(defaultImagePath);
   const [username, setUsername] = useState(user.name);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
@@ -82,7 +82,7 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
 
     const formData = new FormData();
     if (canChangeName && username !== user.name) formData.append("username", username);
-    if (avatarSrc !== user.image) {
+    if (avatarSrc !== defaultImagePath) {
       const file = inputRef.current?.files?.[0];
       if (file) formData.append("image", file);
     }
@@ -132,10 +132,10 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
             )}
           </Stack>
           <Stack direction="row">
-            {user.image && (
+            {user.hasImage && (
               <Box display={{ mobile: "none", tablet: "flex" }} alignItems="center" mx={3}>
                 <img
-                  src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/${user.image}`}
+                  src={avatarSrc ?? undefined}
                   alt="user icon"
                   style={{
                     maxHeight: 100,

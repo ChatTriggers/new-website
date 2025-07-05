@@ -5,6 +5,7 @@ import { type Module, Rank, type Sort, db } from "app/api";
 import Version from "app/api/(utils)/Version";
 import { cookies } from "next/headers";
 import { isUUID } from "validator";
+import { storage } from "app/api/(utils)";
 
 import { saveImageFile } from "../(utils)/assets";
 
@@ -280,10 +281,10 @@ export const getTagsFromForm = (data: FormData): string[] => {
     .filter(tag => tag.length);
 };
 
+// TODO: Get rid of this function?
 export const saveImage = async (module: Module, file: string | Blob): Promise<string> => {
-  (await saveImageFile(file)).toFile(`storage/modules/${module.name}.png`);
-  module.image = `/storage/modules/${module.name}.png`;
-  return module.image;
+  module.hasImage = true;
+  return await storage.setImage("module", module.name, await saveImageFile(file));
 };
 
 export const findMatchingRelease = async (

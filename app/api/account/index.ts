@@ -1,4 +1,5 @@
 import { type User, db } from "app/api";
+import { storage } from "app/api/(utils)";
 import bcrypt from "bcrypt";
 
 import { saveImageFile } from "../(utils)/assets";
@@ -13,7 +14,7 @@ export const verify = async (username: string, password: string): Promise<User |
   if (user && bcrypt.compareSync(password, user.password)) return user;
 };
 
+// TODO: Get rid of this function?
 export const saveImage = async (username: string, file: string | Blob): Promise<string> => {
-  (await saveImageFile(file)).toFile(`storage/users/${username}.png`);
-  return `/storage/users/${username}.png`;
+  return storage.setImage("user", username, await saveImageFile(file));
 };

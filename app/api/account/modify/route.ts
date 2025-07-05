@@ -50,12 +50,14 @@ export const POST = route(async (req: NextRequest) => {
     });
     if (existingUser) throw new ConflictError("Username already taken");
 
-    const imagePath = image ? await saveImage(user.name, image) : undefined;
+    if (image) {
+      await saveImage(user.name, image);
+    }
     user = await db.user.update({
       where: { id: user.id },
       data: {
         name: username,
-        image: imagePath, // TODO: Does this delete the image if its undefined?
+        hasImage: !!image,
         last_name_change_time: new Date(),
       },
     });

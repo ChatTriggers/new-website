@@ -1,12 +1,14 @@
-import * as fs from "node:fs/promises";
-import { parseArgs } from "node:util";
 import colors from "ansi-colors";
 import { MultiBar } from "cli-progress";
 import { PrismaClient, Rank } from "../generated/client";
 import { PrismaClient as PrismaLegacyClient } from "../generated/legacy-client";
+import { storage, createStorageFromEnv } from "../../app/api/(utils)/storage";
+import sharp from "sharp";
 
 const legacyClient = new PrismaLegacyClient();
 const client = new PrismaClient();
+
+const legacyStorage = createStorageFromEnv(undefined, 'OLD_STORAGE_LOCAL_DIR');
 
 // Remove all existing data
 await client.email.deleteMany({});
@@ -24,24 +26,31 @@ const legacyUserIdMap = new Map<bigint, string>();
 let progress = bar.create(legacyUsers.length, 0);
 
 for (const legacyUser of await legacyClient.users.findMany({})) {
+  progress.increment();
+
   if (legacyUser.name.length > 32) {
     bar.log(`Warning: Skipping user "${legacyUser.name}" due to name length\n`);
-  } else {
-    const rank = Rank[legacyUser.rank];
-    const user = await client.user.create({
-      data: {
-        name: legacyUser.name,
-        email: legacyUser.email,
-        email_verified: false,
-        password: legacyUser.password,
-        rank,
-      },
-    });
-
-    legacyUserIdMap.set(legacyUser.id, user.id);
+    continue;
   }
 
-  progress.increment();
+  const rank = Rank[legacyUser.rank];
+  const user = await client.user.create({
+    data: {
+      name: legacyUser.name,
+      email: legacyUser.email,
+      email_verified: false,
+      password: legacyUser.password,
+      rank,
+    },
+  });
+
+  legacyUserIdMap.set(legacyUser.id, user.id);
+
+  // Migrate image
+  const image = await legacyStorage.getImage("user", legacyUser.name);
+  if (image) {
+    storage.setImage("user", legacyUser.name, sharp(image));
+  }
 }
 
 bar.stop();
@@ -59,22 +68,15 @@ for (const legacyModule of legacyModules) {
   if (legacyModule.name.startsWith("&9")) continue;
 
   const userId = legacyUserIdMap.get(legacyModule.user_id);
-  if (!userId)
+  if (!userId) {
     throw new Error(
       `Unknown legacy user ID ${legacyModule.user_id} for module ${legacyModule.name}`,
     );
+  }
 
-  let imagePath: string | null = null;
-  if (legacyModule.image) {
-    const data = await fetch(legacyModule.image);
-    imagePath = `./storage/modules/${legacyModule.name}`;
-
-    try {
-      await fs.mkdir(imagePath, { recursive: true });
-    } catch {}
-
-    imagePath += "/image.png";
-    await fs.writeFile(imagePath, Buffer.from(await data.arrayBuffer()));
+  const image = await legacyStorage.getImage("module", legacyModule.name);
+  if (image) {
+    storage.setImage("module", legacyModule.name, sharp(image));
   }
 
   const module = await client.module.create({
@@ -82,7 +84,6 @@ for (const legacyModule of legacyModules) {
       user_id: userId,
       name: legacyModule.name,
       description: legacyModule.description,
-      image: imagePath,
       downloads: Number(legacyModule.downloads),
       hidden: legacyModule.hidden,
       tags: legacyModule.tags ?? "",
@@ -111,9 +112,11 @@ for (const legacyModule of legacyModules) {
     let uuid = legacyRelease.id;
     uuid = `${uuid.substring(0, 8)}-${uuid.substring(8, 12)}-${uuid.substring(12, 16)}-${uuid.substring(16, 20)}-${uuid.substring(20)}`;
 
-    const oldPath = `./legacy-storage/${legacyModule.name.toLowerCase()}/${uuid}`;
-    const newPath = `./storage/modules/${module.name}/${release.id}`;
-    await fs.cp(oldPath, newPath, { recursive: true });
+    const scripts = await legacyStorage.getReleaseFile("scripts", legacyModule.name, uuid);
+    const metadata = await legacyStorage.getReleaseFile("metadata", legacyModule.name, uuid);
+
+    await storage.setReleaseFile("scripts", module.name, release.id, scripts);
+    await storage.setReleaseFile("metadata", module.name, release.id, metadata);
 
     if (legacyRelease.verification_token !== null)
       bar.log(

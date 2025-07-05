@@ -41,14 +41,15 @@ export const PUT = route(async (req: NextRequest) => {
   const userByEmail = await db.user.findUnique({ where: { email } });
   if (userByEmail) throw new ConflictError("Email already taken");
 
-  const imagePath = image ? await account.saveImage(name, image) : undefined;
+  if (image) await account.saveImage(name, image);
+
   const user = await db.user.create({
     data: {
       name,
       email,
       email_verified: false,
       password: bcrypt.hashSync(password, bcrypt.genSaltSync()),
-      image: imagePath,
+      hasImage: !!image,
     },
   });
 

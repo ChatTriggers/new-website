@@ -55,7 +55,9 @@ export const PATCH = route(async (req: NextRequest, { params }: SlugProps<"nameO
     type: "file",
     optional: true,
   });
-  const imagePath = image ? await modules.saveImage(module, image) : module.image;
+  if (image) {
+    await modules.saveImage(module, image);
+  }
 
   const hiddenStr = getFormEntry({
     form,
@@ -79,7 +81,7 @@ export const PATCH = route(async (req: NextRequest, { params }: SlugProps<"nameO
     data: {
       summary,
       description,
-      image: imagePath,
+      hasImage: !!image,
       hidden,
       tags,
     },
