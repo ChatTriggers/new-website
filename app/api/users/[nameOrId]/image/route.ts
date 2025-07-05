@@ -12,10 +12,7 @@ export const GET = route(async (_req: NextRequest, { params }: SlugProps<"nameOr
   if (!user) return new Response("User not found", { status: 404 });
 
   if (user.hasImage) {
-    const image = await storage.getImage("user", user.name);
-    if (image) {
-      return new Response(image);
-    }
+    return Response.redirect(storage.getImageUrl("user", user.name));
   }
 
   return new Response(null, { status: 204 });

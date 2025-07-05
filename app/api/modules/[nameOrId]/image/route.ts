@@ -7,9 +7,8 @@ export const GET = route(async (_req: NextRequest, { params }: SlugProps<"nameOr
   const module = await modules.getOne(params.nameOrId);
   if (!module) throw new NotFoundError("Module not found");
 
-  const image = await storage.getImage("module", module.name);
-  if (image) {
-    return new Response(image);
+  if (module.hasImage) {
+    return Response.redirect(storage.getImageUrl("module", module.name));
   }
 
   return new Response(null, { status: 204 });

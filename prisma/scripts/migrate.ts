@@ -1,14 +1,14 @@
 import colors from "ansi-colors";
 import { MultiBar } from "cli-progress";
 import sharp from "sharp";
-import { createStorageFromEnv, storage } from "../../app/api/(utils)/storage";
+import { FileStorage, storage } from "../../app/api/(utils)/storage";
 import { PrismaClient, Rank } from "../generated/client";
 import { PrismaClient as PrismaLegacyClient } from "../generated/legacy-client";
 
 const legacyClient = new PrismaLegacyClient();
 const client = new PrismaClient();
 
-const legacyStorage = createStorageFromEnv(undefined, "OLD_STORAGE_LOCAL_DIR");
+const legacyStorage = FileStorage.fromEnv("OLD_STORAGE_LOCAL_DIR");
 
 // Remove all existing data
 await client.email.deleteMany({});
