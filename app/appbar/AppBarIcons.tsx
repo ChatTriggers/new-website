@@ -20,16 +20,18 @@ import {
   Sheet,
   Typography,
 } from "@mui/joy";
-import { useState } from "react";
-
 import { isEmailVerified } from "app/(utils)";
 import type { AuthenticatedUser } from "app/api";
+import { useState } from "react";
 
 interface Props {
   user?: AuthenticatedUser;
 }
 
 function AccountIcon({ user }: Props) {
+  const [verificationModalOpen, setVerificationModalOpen] = useState(false);
+  const [verificationModalLoading, setVerificationModalLoading] = useState(false);
+
   if (!user) {
     return (
       <Sheet
@@ -57,9 +59,6 @@ function AccountIcon({ user }: Props) {
     );
   }
 
-  const [verificationModalOpen, setVerificationModalOpen] = useState(false);
-  const [verificationModalLoading, setVerificationModalLoading] = useState(false);
-
   const onSendVerificationEmail = async () => {
     setVerificationModalLoading(true);
 
@@ -78,10 +77,7 @@ function AccountIcon({ user }: Props) {
   let avatar: React.ReactNode | undefined;
   if (user) {
     avatar = (
-      <Avatar
-        size="sm"
-        src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image`}
-      />
+      <Avatar size="sm" src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image`} />
     );
 
     // Unverified badge takes precedent over notification badge

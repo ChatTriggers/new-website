@@ -1,4 +1,4 @@
-import { User, db } from "app/api";
+import { db } from "app/api";
 import { ClientError, getFormData, getFormEntry, route } from "app/api/(utils)";
 import { isPasswordValid } from "app/constants";
 import bcrypt from "bcrypt";

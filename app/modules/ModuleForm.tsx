@@ -20,7 +20,7 @@ import colors from "@mui/joy/colors";
 import type { PublicModule } from "app/api";
 import { isModuleValid } from "app/constants";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 import MarkdownEditor from "./MarkdownEditor";
 
@@ -136,7 +136,10 @@ export default function ModuleForm({ editingModule, availableTags, onSubmit }: P
   const [createLoading, setCreateLoading] = useState(false);
 
   const [imageUrl, setImageUrl] = useState(
-    editingModule?.hasImage ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${editingModule.name}/image` : undefined);
+    editingModule?.hasImage
+      ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${editingModule.name}/image`
+      : undefined,
+  );
 
   const setUploadedImage = (file?: File) => {
     if (!file) return;

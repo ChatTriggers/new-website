@@ -6,11 +6,10 @@ import type { NextRequest } from "next/server";
 export const POST = route(async (req: NextRequest, { params }: SlugProps<"nameOrId">) => {
   const data = await req.formData();
   const token = data.get("token");
-  const nameOrId = data.get("nameOrId");
 
   if (!token || typeof token !== "string") throw new ClientError("Missing verification token");
   const dbUser = await db.user.findFirst({ where: { verification_token: token } });
-  if (!dbUser || (dbUser.name !== nameOrId && dbUser.id.toString() !== nameOrId))
+  if (!dbUser || (dbUser.name !== params.nameOrId && dbUser.id.toString() !== params.nameOrId))
     throw new ClientError("Invalid verification token or username");
 
   const newUser = await db.user.update({

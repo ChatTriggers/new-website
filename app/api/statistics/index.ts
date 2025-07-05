@@ -1,4 +1,4 @@
-import { Module, Release, db } from "app/api";
+import { db } from "app/api";
 
 interface Stats {
   moduleCount: number;

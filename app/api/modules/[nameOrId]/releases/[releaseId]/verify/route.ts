@@ -3,16 +3,16 @@ import type { SlugProps } from "app/(utils)/next";
 import {
   ClientError,
   ConflictError,
-  ForbiddenError,
-  NotAuthenticatedError,
-  NotFoundError,
   db,
+  ForbiddenError,
   getFormData,
   getFormEntry,
   getSessionFromRequest,
+  NotAuthenticatedError,
+  NotFoundError,
+  Rank,
   route,
 } from "app/api";
-import { type Notification, Rank } from "app/api";
 import { deleteReleaseVerificationMessage } from "app/api/(utils)/webhooks";
 import { isUUID } from "validator";
 

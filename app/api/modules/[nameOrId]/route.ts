@@ -2,15 +2,16 @@ import { isEmailVerified } from "app/(utils)";
 import type { SlugProps } from "app/(utils)/next";
 import {
   ClientError,
+  db,
   ForbiddenError,
-  NotAuthenticatedError,
-  NotFoundError,
   getFormData,
   getFormEntry,
   getSessionFromRequest,
+  NotAuthenticatedError,
+  NotFoundError,
+  Rank,
   route,
 } from "app/api";
-import { Module, Rank, db } from "app/api";
 import * as modules from "app/api/modules";
 import type { NextRequest } from "next/server";
 

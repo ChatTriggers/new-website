@@ -1,8 +1,8 @@
-import type { AuthenticatedUser, Rank, User } from "app/api";
+import type { AuthenticatedUser, Rank } from "app/api";
 import jwt from "jsonwebtoken";
 import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import type { RequestCookies, ResponseCookies } from "next/dist/server/web/spec-extension/cookies";
-import type { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const JWT_ISSUER = "ChatTriggers";
 

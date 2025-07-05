@@ -106,7 +106,7 @@ export function cached<T>(timeoutMs: number, producer: () => Promise<T>): () => 
   let cachedData: T | undefined;
   let lastTime = 0;
   return async () => {
-    const time = new Date().getTime();
+    const time = Date.now();
     if (!cachedData || time - lastTime > timeoutMs) {
       cachedData = await producer();
       lastTime = time;
@@ -118,5 +118,5 @@ export function cached<T>(timeoutMs: number, producer: () => Promise<T>): () => 
 export * from "./email";
 export * from "./errors";
 export * from "./session";
-export * from "./Version";
 export * from "./storage";
+export * from "./Version";

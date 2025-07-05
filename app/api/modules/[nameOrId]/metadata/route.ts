@@ -1,5 +1,5 @@
 import type { SlugProps } from "app/(utils)/next";
-import { BadQueryParamError, MissingQueryParamError, NotFoundError, db, route } from "app/api";
+import { BadQueryParamError, MissingQueryParamError, NotFoundError, route } from "app/api";
 import Version from "app/api/(utils)/Version";
 import * as modules from "app/api/modules";
 import { getMetadata } from "app/api/modules/[nameOrId]/releases";

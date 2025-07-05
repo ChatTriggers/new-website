@@ -1,8 +1,7 @@
-import * as fs from "node:fs/promises";
 import type { RelationalModule } from "app/api";
-import { type Module, type Release, db } from "app/api";
-import * as modules from "app/api/modules";
+import { db, type Module, type Release } from "app/api";
 import { storage } from "app/api/(utils)";
+import * as modules from "app/api/modules";
 
 export async function getScripts(
   moduleOrIdentifier: Module | RelationalModule<"releases"> | string,

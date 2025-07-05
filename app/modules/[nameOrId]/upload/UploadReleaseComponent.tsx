@@ -12,8 +12,8 @@ import {
   Sheet,
   Stack,
   SvgIcon,
-  Typography,
   styled,
+  Typography,
 } from "@mui/joy";
 import colors from "@mui/joy/colors";
 import type { PublicModule } from "app/api";

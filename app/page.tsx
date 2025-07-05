@@ -4,16 +4,14 @@ import { Octokit } from "@octokit/rest";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Fragment } from "react";
-
-import type { GitInfo } from "./Home";
-import { DownloadComponent } from "./Home";
-import { cached, getSessionFromCookies } from "./api";
 import type { AuthenticatedUser, RelationalModule } from "./api";
-import { Module, Release, User, db } from "./api";
+import { cached, db, getSessionFromCookies } from "./api";
 import { getStats } from "./api/statistics";
 import AppBarIcons from "./appbar/AppBarIcons";
 import CTLogo from "./appbar/CTLogo";
 import SearchBar from "./appbar/SearchBar";
+import type { GitInfo } from "./Home";
+import { DownloadComponent } from "./Home";
 
 interface Props {
   user?: AuthenticatedUser;

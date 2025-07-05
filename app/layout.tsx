@@ -8,14 +8,13 @@ import "swagger-ui-react/swagger-ui.css";
 import "reflect-metadata";
 
 import { CssBaseline } from "@mui/joy";
-import { User, db } from "app/api";
+import { db } from "app/api";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 
-import { isEmailVerified } from "./(utils)";
-import ThemeRegistry from "./ThemeRegistry";
 import { getSessionFromCookies } from "./api";
 import AppBar from "./appbar/AppBar";
+import ThemeRegistry from "./ThemeRegistry";
 
 export const metadata: Metadata = {
   title: "ChatTriggers",

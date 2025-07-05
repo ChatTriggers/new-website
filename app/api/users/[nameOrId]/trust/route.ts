@@ -1,6 +1,5 @@
 import type { SlugProps } from "app/(utils)/next";
-import { ForbiddenError, getSessionFromRequest, route } from "app/api";
-import { Rank, db } from "app/api";
+import { db, ForbiddenError, getSessionFromRequest, Rank, route } from "app/api";
 import type { NextRequest } from "next/server";
 
 export const POST = route(async (req: NextRequest, { params }: SlugProps<"nameOrId">) => {

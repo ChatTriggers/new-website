@@ -1,4 +1,4 @@
-import { type Prisma, type PublicUser, type User, db } from "app/api";
+import { db, type Prisma, type PublicUser, type User } from "app/api";
 import { isUUID } from "validator";
 
 export const getUserPublic = async (nameOrId: string): Promise<PublicUser | undefined> => {

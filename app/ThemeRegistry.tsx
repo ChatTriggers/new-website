@@ -3,8 +3,7 @@
 import createCache from "@emotion/cache";
 import { CacheProvider } from "@emotion/react";
 import type { PalettePrimary, PaletteRange } from "@mui/joy";
-import { CssVarsProvider as JoyCssVarsProvider } from "@mui/joy";
-import { extendTheme } from "@mui/joy";
+import { extendTheme, CssVarsProvider as JoyCssVarsProvider } from "@mui/joy";
 import type { BreakpointsOptions } from "@mui/material/styles";
 import {
   THEME_ID as MATERIAL_THEME_ID,

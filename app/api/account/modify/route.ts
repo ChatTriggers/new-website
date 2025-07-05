@@ -1,13 +1,13 @@
-import { User, db } from "app/api";
+import { db } from "app/api";
 import {
   ClientError,
   ConflictError,
-  NotAuthenticatedError,
-  ServerError,
   getFormData,
   getFormEntry,
   getSessionFromRequest,
+  NotAuthenticatedError,
   route,
+  ServerError,
   setSession,
 } from "app/api/(utils)";
 import { type NextRequest, NextResponse } from "next/server";
@@ -40,7 +40,7 @@ export const POST = route(async (req: NextRequest) => {
 
   if (username) {
     if (user.last_name_change_time) {
-      const diff = new Date().getTime() - user.last_name_change_time.getTime();
+      const diff = Date.now() - user.last_name_change_time.getTime();
       if (diff < SECONDS_PER_MONTH)
         throw new ClientError("Cannot change username more than once every 30 days");
     }

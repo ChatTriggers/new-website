@@ -1,4 +1,4 @@
-import { type User, db } from "app/api";
+import { db, type User } from "app/api";
 import { storage } from "app/api/(utils)";
 import bcrypt from "bcrypt";
 

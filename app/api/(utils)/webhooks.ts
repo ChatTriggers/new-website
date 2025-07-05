@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "@discordjs/builders";
-import { storage, type Module, type RelationalModule, type Release } from "app/api";
+import type { Module, RelationalModule, Release } from "app/api";
 import { WebhookClient } from "discord.js";
 
 let announceClient: WebhookClient | null = null;

@@ -44,7 +44,9 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
 
-  const defaultImagePath = user.hasImage ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image` : null;
+  const defaultImagePath = user.hasImage
+    ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image`
+    : null;
   const [avatarSrc, setAvatarSrc] = useState(defaultImagePath);
   const [username, setUsername] = useState(user.name);
   const [loading, setLoading] = useState(false);
@@ -57,7 +59,7 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
     if (!lastChangeTime) {
       canChangeName = true;
     } else {
-      const diff = new Date().getTime() - lastChangeTime.getTime();
+      const diff = Date.now() - lastChangeTime.getTime();
       canChangeName = diff > SECONDS_PER_MONTH;
     }
   }
@@ -132,10 +134,10 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
             )}
           </Stack>
           <Stack direction="row">
-            {user.hasImage && (
+            {avatarSrc ? (
               <Box display={{ mobile: "none", tablet: "flex" }} alignItems="center" mx={3}>
                 <img
-                  src={avatarSrc ?? undefined}
+                  src={avatarSrc}
                   alt="user icon"
                   style={{
                     maxHeight: 100,
@@ -145,7 +147,7 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
                   }}
                 />
               </Box>
-            )}
+            ) : null}
             <Stack
               display={{ mobile: "none", desktop: "flex" }}
               alignItems="start"

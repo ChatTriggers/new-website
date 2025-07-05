@@ -14,8 +14,8 @@ import {
   Typography,
 } from "@mui/joy";
 import { green, red, yellow } from "@mui/material/colors";
-import { Mobile, NotMobile } from "app/Mobile";
 import type { PublicModule } from "app/api";
+import { Mobile, NotMobile } from "app/Mobile";
 import Markdown from "marked-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

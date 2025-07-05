@@ -2,9 +2,9 @@ import * as fs from "node:fs/promises";
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
 import JSZip from "jszip";
-import { type Module, PrismaClient, Rank, type Release, type User } from "../generated/client";
-import { storage } from "../../app/api/(utils)";
 import sharp from "sharp";
+import { storage } from "../../app/api/(utils)";
+import { type Module, PrismaClient, Rank, type Release, type User } from "../generated/client";
 
 const versions = [
   "0.18.4",
@@ -26,14 +26,14 @@ const versions = [
 const db = new PrismaClient();
 
 // Remove all existing data
-console.log('Removing all DB data');
+console.log("Removing all DB data");
 await db.email.deleteMany({});
 await db.notification.deleteMany({});
 await db.release.deleteMany({});
 await db.module.deleteMany({});
 await db.user.deleteMany({});
 
-console.log('Removing all storage');
+console.log("Removing all storage");
 await storage.deleteEverything();
 
 function randomModuleName() {
@@ -256,4 +256,4 @@ for (let i = 0; i < numReleases; i++) {
   });
 }
 
-console.log('Done!');
+console.log("Done!");

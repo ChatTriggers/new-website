@@ -2,6 +2,7 @@ import {
   BadQueryParamError,
   ClientError,
   ConflictError,
+  db,
   getFormData,
   getFormEntry,
   getSessionFromRequest,
@@ -9,7 +10,6 @@ import {
   sendVerificationEmail,
   setSession,
 } from "app/api";
-import { User, db } from "app/api";
 import * as account from "app/api/account";
 import { isEmailValid, isPasswordValid, isUsernameValid } from "app/constants";
 import bcrypt from "bcrypt";

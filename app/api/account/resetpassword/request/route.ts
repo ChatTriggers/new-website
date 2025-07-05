@@ -1,4 +1,4 @@
-import { User, db } from "app/api";
+import { db } from "app/api";
 import {
   BadQueryParamError,
   getFormData,

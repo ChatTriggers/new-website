@@ -1,15 +1,15 @@
 import { isEmailVerified } from "app/(utils)";
 import {
   ClientError,
+  db,
   ForbiddenError,
-  NotAuthenticatedError,
-  ServerError,
   getFormData,
   getFormEntry,
   getSessionFromRequest,
+  NotAuthenticatedError,
   route,
+  ServerError,
 } from "app/api";
-import { Module, User, db } from "app/api";
 import * as modules from "app/api/modules";
 import { isModuleValid as isModuleNameValid } from "app/constants";
 import type { NextRequest } from "next/server";

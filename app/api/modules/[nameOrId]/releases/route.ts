@@ -1,26 +1,27 @@
 import { randomUUID } from "node:crypto";
-import * as fs from "node:fs/promises";
 import { isEmailVerified } from "app/(utils)";
 import type { SlugProps } from "app/(utils)/next";
 import {
   BadQueryParamError,
   ClientError,
   ConflictError,
+  db,
   ForbiddenError,
-  NotAuthenticatedError,
-  NotFoundError,
-  type RelationalModule,
+  getAllowedVersions,
   getFormData,
   getFormEntry,
   getSessionFromRequest,
+  NotAuthenticatedError,
+  NotFoundError,
+  Rank,
+  type RelationalModule,
+  type Release,
   route,
 } from "app/api";
-import { getAllowedVersions } from "app/api";
-import { Rank, type Release, db } from "app/api";
+import { storage } from "app/api/(utils)";
 import Version from "app/api/(utils)/Version";
 import { onReleaseCreated, onReleaseNeedsToBeVerified } from "app/api/(utils)/webhooks";
 import * as modules from "app/api/modules";
-import { storage } from "app/api/(utils)";
 import JSZip from "jszip";
 import type { NextRequest } from "next/server";
 
@@ -129,7 +130,9 @@ async function saveZipFile(
   metadata.name = module.name;
   metadata.version = release.release_version;
   metadata.tags = module.tags ? module.tags.split(",") : undefined;
-  metadata.pictureLink = module.hasImage ? await storage.getImageUrl("module", module.name) : undefined;
+  metadata.pictureLink = module.hasImage
+    ? await storage.getImageUrl("module", module.name)
+    : undefined;
   metadata.creator = module.user.name;
   metadata.author = undefined;
   metadata.description = module.description ?? undefined;
@@ -142,7 +145,12 @@ async function saveZipFile(
 
   try {
     // Save to storage folder
-    await storage.setReleaseFile("scripts", module.name, release.id, await zip.generateAsync({ type: "uint8array" }));
+    await storage.setReleaseFile(
+      "scripts",
+      module.name,
+      release.id,
+      await zip.generateAsync({ type: "uint8array" }),
+    );
 
     // Also save the metadata file separately for quick access
     await storage.setReleaseFile("metadata", module.name, release.id, metadataStr);

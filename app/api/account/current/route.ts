@@ -1,5 +1,4 @@
-import { NotAuthenticatedError, ServerError, getSessionFromRequest, route } from "app/api";
-import { User, db } from "app/api";
+import { db, getSessionFromRequest, NotAuthenticatedError, route, ServerError } from "app/api";
 import type { NextRequest } from "next/server";
 
 export const GET = route(async (req: NextRequest) => {

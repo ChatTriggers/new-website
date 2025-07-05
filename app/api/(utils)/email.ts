@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Email, type User, db } from "app/api";
+import { db, type User } from "app/api";
 import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
 
 const mailerSend = process.env.MAILERSEND_API_KEY
