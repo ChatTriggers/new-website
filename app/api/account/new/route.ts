@@ -46,7 +46,7 @@ export const PUT = route(async (req: NextRequest) => {
     data: {
       name,
       email,
-      emailVerified: false,
+      email_verified: false,
       password: bcrypt.hashSync(password, bcrypt.genSaltSync()),
       image: imagePath,
     },

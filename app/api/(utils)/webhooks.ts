@@ -63,14 +63,14 @@ export const onModuleDeleted = async (module: Module) => {
 
 export const onReleaseCreated = async (module: RelationalModule<"user">, release: Release) => {
   const embed = new EmbedBuilder()
-    .setTitle(`Release v${release.releaseVersion} created for module: ${module.name}`)
+    .setTitle(`Release v${release.release_version} created for module: ${module.name}`)
     .setURL(`${process.env.NEXT_PUBLIC_WEB_ROOT}/modules/${module.name}`)
     .setColor(0x7b2fb5)
     .setTimestamp(Date.now())
     .addFields(
       { name: "Author", value: module.user.name, inline: true },
-      { name: "Release Version", value: release.releaseVersion, inline: true },
-      { name: "Mod Version", value: release.modVersion, inline: true },
+      { name: "Release Version", value: release.release_version, inline: true },
+      { name: "Mod Version", value: release.mod_version, inline: true },
     );
 
   if (release.changelog) {
@@ -95,7 +95,7 @@ export const onReleaseNeedsToBeVerified = async (module: Module, release: Releas
   const url = `${process.env.NEXT_PUBLIC_WEB_ROOT}/modules/${module.name}/releases/${release.id}/verify`;
 
   const embed = new EmbedBuilder()
-    .setTitle(`Release v${release.releaseVersion} for module ${module.name} has been posted`)
+    .setTitle(`Release v${release.release_version} for module ${module.name} has been posted`)
     .setDescription(
       `Please verify this release is safe and non-malicious.\nClick [here](${url}) to confirm verification`,
     )
@@ -109,13 +109,13 @@ export const onReleaseNeedsToBeVerified = async (module: Module, release: Releas
       avatarURL: `${process.env.NEXT_PUBLIC_WEB_ROOT}/favicon.ico`,
       embeds: [embed],
     });
-    release.verificationMessageId = response.id;
+    release.verification_message_id = response.id;
   }
 };
 
 export const deleteReleaseVerificationMessage = async (release: Release) => {
   const client = getVerifyClient();
-  if (client && release.verificationMessageId) {
-    await client.deleteMessage(release.verificationMessageId);
+  if (client && release.verification_message_id) {
+    await client.deleteMessage(release.verification_message_id);
   }
 };

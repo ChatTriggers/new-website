@@ -2,8 +2,24 @@ import * as fs from "node:fs/promises";
 import { faker } from "@faker-js/faker";
 import bcrypt from "bcrypt";
 import JSZip from "jszip";
-import { type Module, PrismaClient, Rank, type Release, type User } from "prisma/generated/client";
-import versions from "public/versions.json";
+import { type Module, PrismaClient, Rank, type Release, type User } from "../generated/client";
+
+const versions = [
+  "0.18.4",
+  "1.1.2",
+  "1.2.1",
+  "1.2.2",
+  "1.3.2",
+  "2.0.0",
+  "2.0.3",
+  "2.0.4",
+  "2.1.0",
+  "2.1.4",
+  "2.1.5",
+  "2.2.0",
+  "2.2.1",
+  "3.0.0",
+];
 
 const db = new PrismaClient();
 
@@ -67,7 +83,7 @@ async function randomScripts(
       summary: module.summary,
       description: module.description,
       creator: user.name,
-      version: release.releaseVersion,
+      version: release.release_version,
       tags: module.tags,
       entry: entryName,
       mixinEntry: mixinName,
@@ -135,16 +151,16 @@ for (let i = 0; i < numUsers; i++) {
   const user = await db.user.create({
     data: {
       email: faker.internet.email(),
-      emailVerified: faker.datatype.boolean(0.85),
+      email_verified: faker.datatype.boolean(0.85),
       name: username,
       password: bcrypt.hashSync(faker.internet.password(), bcrypt.genSaltSync()),
       image: imagePath,
-      lastNameChangeTime: faker.helpers.maybe(
+      last_name_change_time: faker.helpers.maybe(
         () => faker.date.between({ from: new Date(2024, 0), to: Date.now() }),
         { probability: 0.1 },
       ),
-      passwordResetToken: null,
-      verificationToken: null,
+      password_reset_token: null,
+      verification_token: null,
       rank: faker.helpers.enumValue(Rank),
     },
   });
@@ -173,7 +189,7 @@ for (let i = 0; i < numModules; i++) {
       downloads: 0, // Incremented as releases are made
       hidden: faker.datatype.boolean(0.1),
       image: imagePath,
-      userId: faker.helpers.arrayElement(Array.from(userIds)),
+      user_id: faker.helpers.arrayElement(Array.from(userIds)),
     },
   });
 
@@ -204,14 +220,14 @@ for (let i = 0; i < numReleases; i++) {
 
   const release = await db.release.create({
     data: {
-      moduleId,
-      modVersion: faker.helpers.arrayElement(Object.keys(versions.modVersions)),
-      releaseVersion: faker.system.semver(),
+      module_id: moduleId,
+      mod_version: faker.helpers.arrayElement(Object.keys(versions.mod_versions)),
+      release_version: faker.system.semver(),
       changelog: faker.helpers.maybe(faker.lorem.text, { probability: 0.3 }),
       downloads: faker.number.int({ min: 0, max: 1000 }),
       verified,
-      verifiedById,
-      verifiedAt,
+      verified_by_id: verifiedById,
+      verified_at: verifiedAt,
     },
   });
 

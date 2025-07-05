@@ -54,14 +54,14 @@ export const POST = route(async (req, { params }: SlugProps<"nameOrId" | "releas
 
   db.notification.create({
     data: {
-      userId: module.userId,
+      user_id: module.user_id,
       read: false,
       ...(verified
         ? {
-            title: `Release v${release.releaseVersion} for module ${module.name} has been verified`,
+            title: `Release v${release.release_version} for module ${module.name} has been verified`,
           }
         : {
-            title: `Release v${release.releaseVersion} for module ${module.name} has been rejected`,
+            title: `Release v${release.release_version} for module ${module.name} has been rejected`,
             description: `Your release has been rejected, as it is not suitable for publication. If you have any questions, please contact us on our Discord server.\n\nReason given for rejection: ${reason}`,
           }),
     },
@@ -72,8 +72,8 @@ export const POST = route(async (req, { params }: SlugProps<"nameOrId" | "releas
       where: { id: release.id },
       data: {
         verified: true,
-        verifiedAt: new Date(),
-        verifiedById: sessionUser.id,
+        verified_at: new Date(),
+        verified_by_id: sessionUser.id,
       },
     });
   }

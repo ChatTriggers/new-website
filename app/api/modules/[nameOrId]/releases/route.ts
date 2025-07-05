@@ -69,7 +69,7 @@ export const PUT = route(async (req: NextRequest, { params }: SlugProps<"nameOrI
       module: {
         id: existingModule.id,
       },
-      releaseVersion,
+      release_version: releaseVersion,
     },
   });
   if (existingRelease)
@@ -85,9 +85,9 @@ export const PUT = route(async (req: NextRequest, { params }: SlugProps<"nameOrI
   const release = await db.release.create({
     data: {
       id: randomUUID(),
-      moduleId: existingModule.id,
-      releaseVersion,
-      modVersion,
+      module_id: existingModule.id,
+      release_version: releaseVersion,
+      mod_version: modVersion,
       changelog,
       verified: session.rank !== Rank.default,
     },
@@ -130,7 +130,7 @@ async function saveZipFile(
     }
 
     metadata.name = module.name;
-    metadata.version = release.releaseVersion;
+    metadata.version = release.release_version;
     metadata.tags = module.tags ? module.tags.split(",") : undefined;
     if (module.image) {
       metadata.pictureLink = `${process.env.NEXT_PUBLIC_WEB_ROOT}/${module.image}`;

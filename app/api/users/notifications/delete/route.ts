@@ -25,7 +25,7 @@ export const DELETE = route(async req => {
   if (!id) throw new MissingQueryParamError("id");
   if (!userId) throw new MissingQueryParamError("user_id");
 
-  await db.notification.delete({ where: { id, userId } });
+  await db.notification.delete({ where: { id, user_id: userId } });
 
   return new Response("Deleted notification");
 });

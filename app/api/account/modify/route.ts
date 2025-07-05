@@ -39,8 +39,8 @@ export const POST = route(async (req: NextRequest) => {
   if (!user) throw new ServerError("No user corresponding to existing session");
 
   if (username) {
-    if (user.lastNameChangeTime) {
-      const diff = new Date().getTime() - user.lastNameChangeTime.getTime();
+    if (user.last_name_change_time) {
+      const diff = new Date().getTime() - user.last_name_change_time.getTime();
       if (diff < SECONDS_PER_MONTH)
         throw new ClientError("Cannot change username more than once every 30 days");
     }
@@ -56,7 +56,7 @@ export const POST = route(async (req: NextRequest) => {
       data: {
         name: username,
         image: imagePath, // TODO: Does this delete the image if its undefined?
-        lastNameChangeTime: new Date(),
+        last_name_change_time: new Date(),
       },
     });
   }

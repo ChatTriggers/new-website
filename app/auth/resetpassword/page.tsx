@@ -8,9 +8,9 @@ import ResetPasswordComponent from "./ResetPasswordComponent";
 export default async function Page({ searchParams }: SearchParamProps) {
   const token = searchParams.token;
   if (typeof token === "string") {
-    const user = await db.user.findFirst({ where: { passwordResetToken: token } });
+    const user = await db.user.findFirst({ where: { password_reset_token: token } });
     if (!user) return <InvalidTokenComponent />;
-    if (user.passwordResetToken !== token) return <InvalidTokenComponent />;
+    if (user.password_reset_token !== token) return <InvalidTokenComponent />;
     return <ResetPasswordComponent email={user.email} token={token} />;
   }
 

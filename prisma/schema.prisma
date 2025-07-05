@@ -4,81 +4,81 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("MYSQL_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Module {
   id          String    @id @default(uuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
+  user_id     String
+  user        User      @relation(fields: [user_id], references: [id])
   name        String    @unique @db.VarChar(64)
   summary     String?   @db.VarChar(300)
   description String?   @db.Text
   image       String?   @db.VarChar(64)
-  downloads   Int       @default(0) @db.UnsignedInt
+  downloads   Int       @default(0)
   hidden      Boolean   @default(false)
   tags        String?   @db.VarChar(200) // comma-separated array
   releases    Release[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 }
 
 model Release {
-  id                    String    @id @default(uuid())
-  moduleId              String
-  module                Module    @relation(fields: [moduleId], references: [id])
-  releaseVersion        String    @db.VarChar(32)
-  modVersion            String    @db.VarChar(16)
-  changelog             String?   @db.Text
-  downloads             Int       @default(0) @db.UnsignedInt
-  verified              Boolean   @default(false)
-  verificationMessageId String?   @db.VarChar(64)
-  verifiedById          String?
-  verifiedAt            DateTime?
+  id                      String    @id @default(uuid())
+  module_id               String
+  module                  Module    @relation(fields: [module_id], references: [id])
+  release_version         String    @db.VarChar(32)
+  mod_version             String    @db.VarChar(16)
+  changelog               String?   @db.Text
+  downloads               Int       @default(0)
+  verified                Boolean   @default(false)
+  verification_message_id String?   @db.VarChar(64)
+  verified_by_id          String?
+  verified_at             DateTime?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at              DateTime  @default(now())
+  updated_at              DateTime  @updatedAt
 }
 
 model User {
-  id                 String         @id @default(uuid())
-  name               String         @unique @db.VarChar(32)
-  email              String         @unique @db.VarChar(192)
-  emailVerified      Boolean
-  password           String         @db.VarChar(192)
-  lastNameChangeTime DateTime?
-  verificationToken  String?
-  passwordResetToken String?
-  image              String?        @db.VarChar(128)
-  rank               Rank           @default(default)
-  notifications      Notification[]
-  modules            Module[]
+  id                    String         @id @default(uuid())
+  name                  String         @unique @db.VarChar(32)
+  email                 String         @unique @db.VarChar(192)
+  email_verified        Boolean
+  password              String         @db.VarChar(192)
+  last_name_change_time DateTime?
+  verification_token    String?
+  password_reset_token  String?
+  image                 String?        @db.VarChar(128)
+  rank                  Rank           @default(default)
+  notifications         Notification[]
+  modules               Module[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at            DateTime       @default(now())
+  updated_at            DateTime       @updatedAt
 }
 
 model Email {
-  id        Int       @id @default(autoincrement())
-  type      EmailType
-  subtype   String?   @db.VarChar(50)
-  recipient String    @db.VarChar(255)
-  timestamp String    @db.VarChar(100)
+  id         Int       @id @default(autoincrement())
+  type       EmailType
+  subtype    String?   @db.VarChar(50)
+  recipient  String    @db.VarChar(255)
+  timestamp  String    @db.VarChar(100)
 
-  createdAt DateTime @default(now())
+  created_at DateTime  @default(now())
 }
 
 model Notification {
-  id          Int     @id @default(autoincrement())
-  userId      String
-  user        User    @relation(fields: [userId], references: [id])
-  title       String  @db.VarChar(255)
-  description String? @db.Text
+  id          Int      @id @default(autoincrement())
+  user_id     String
+  user        User     @relation(fields: [user_id], references: [id])
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
   read        Boolean
 
-  createdAt DateTime @default(now())
+  created_at  DateTime @default(now())
 }
 
 enum EmailType {

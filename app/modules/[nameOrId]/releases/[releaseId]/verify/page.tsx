@@ -1,6 +1,6 @@
 import type { SlugProps } from "app/(utils)/next";
 import { getSessionFromCookies } from "app/api";
-import { Rank, Release, db } from "app/api";
+import { Rank, db } from "app/api";
 import * as modules from "app/api/modules";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -25,7 +25,7 @@ export default async function Page({ params }: SlugProps<"nameOrId" | "releaseId
         verified: false,
       },
       orderBy: {
-        releaseVersion: "desc",
+        release_version: "desc",
       },
     })
   )?.public();

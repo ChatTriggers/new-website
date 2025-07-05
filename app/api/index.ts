@@ -76,33 +76,33 @@ const makePrismaClient = () => {
           needs: {
             id: true,
             name: true,
-            userId: true,
+            user_id: true,
             summary: true,
             description: true,
             image: true,
             downloads: true,
             hidden: true,
             tags: true,
-            createdAt: true,
-            updatedAt: true,
+            created_at: true,
+            updated_at: true,
           },
           compute(module) {
             return async (session?: Session): Promise<PublicModule> => {
               const user = await db.user.findUnique({
                 where: {
-                  id: module.userId,
+                  id: module.user_id,
                 },
               });
 
               if (!user)
-                throw new Error(`Unable to find user ${module.userId} for module ${module.name}`);
+                throw new Error(`Unable to find user ${module.user_id} for module ${module.name}`);
 
               const isAuthed =
-                session && (session.id === module.userId || session.rank !== Rank.default);
+                session && (session.id === module.user_id || session.rank !== Rank.default);
 
               const releases = await db.release.findMany({
                 where: {
-                  moduleId: module.id,
+                  module_id: module.id,
                 },
               });
 
@@ -124,8 +124,8 @@ const makePrismaClient = () => {
                 hidden: module.hidden || undefined,
                 tags: module.tags && module.tags.length > 0 ? module.tags.split(",") : undefined,
                 releases: releases.filter(r => isAuthed || r.verified).map(r => r.public()),
-                created_at: module.createdAt.getTime(),
-                updated_at: module.updatedAt.getTime(),
+                created_at: module.created_at.getTime(),
+                updated_at: module.updated_at.getTime(),
               };
             };
           },
@@ -151,14 +151,14 @@ const makePrismaClient = () => {
             title: true,
             description: true,
             read: true,
-            createdAt: true,
+            created_at: true,
           },
           compute(notification) {
             return (): PublicNotification => ({
               title: notification.title,
               description: notification.description ?? undefined,
               read: notification.read,
-              created_at: notification.createdAt.getTime(),
+              created_at: notification.created_at.getTime(),
             });
           },
         },
@@ -167,24 +167,24 @@ const makePrismaClient = () => {
         public: {
           needs: {
             id: true,
-            releaseVersion: true,
-            modVersion: true,
+            release_version: true,
+            mod_version: true,
             changelog: true,
             downloads: true,
             verified: true,
-            createdAt: true,
-            updatedAt: true,
+            created_at: true,
+            updated_at: true,
           },
           compute(release) {
             return (): PublicRelease => ({
               id: release.id,
-              release_version: release.releaseVersion,
-              mod_version: release.modVersion,
+              release_version: release.release_version,
+              mod_version: release.mod_version,
               changelog: release.changelog,
               downloads: release.downloads,
               verified: release.verified,
-              created_at: release.createdAt.getTime(),
-              updated_at: release.updatedAt.getTime(),
+              created_at: release.created_at.getTime(),
+              updated_at: release.updated_at.getTime(),
             });
           },
         },
@@ -196,7 +196,7 @@ const makePrismaClient = () => {
             name: true,
             image: true,
             rank: true,
-            createdAt: true,
+            created_at: true,
           },
           compute(user) {
             return (): PublicUser => ({
@@ -204,7 +204,7 @@ const makePrismaClient = () => {
               name: user.name,
               image: user.image,
               rank: user.rank,
-              created_at: user.createdAt.getTime(),
+              created_at: user.created_at.getTime(),
             });
           },
         },
@@ -214,11 +214,11 @@ const makePrismaClient = () => {
             name: true,
             image: true,
             rank: true,
-            createdAt: true,
+            created_at: true,
 
             email: true,
-            emailVerified: true,
-            lastNameChangeTime: true,
+            email_verified: true,
+            last_name_change_time: true,
           },
           compute(user) {
             return async (): Promise<AuthenticatedUser> => ({
@@ -226,15 +226,15 @@ const makePrismaClient = () => {
               name: user.name,
               image: user.image,
               rank: user.rank,
-              created_at: user.createdAt.getTime(),
+              created_at: user.created_at.getTime(),
 
               email: user.email,
-              email_verified: user.emailVerified,
-              last_name_change_time: user.lastNameChangeTime,
+              email_verified: user.email_verified,
+              last_name_change_time: user.last_name_change_time,
               notifications: (
                 await prisma.notification.findMany({
                   where: {
-                    userId: user.id,
+                    user_id: user.id,
                   },
                 })
               ).map(n => n.public()),

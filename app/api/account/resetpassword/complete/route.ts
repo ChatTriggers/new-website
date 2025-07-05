@@ -14,7 +14,7 @@ export const POST = route(async (req: NextRequest) => {
 
   // Intentionally vague errors so a user can't use this endpoint to query email addresses
   if (!user) throw new ClientError("Invalid email or token");
-  if (user.passwordResetToken !== token) throw new ClientError("Invalid email or token");
+  if (user.password_reset_token !== token) throw new ClientError("Invalid email or token");
 
   if (!isPasswordValid(password))
     throw new ClientError("Password must be at least 8 character long");
@@ -23,7 +23,7 @@ export const POST = route(async (req: NextRequest) => {
     where: { email },
     data: {
       password: bcrypt.hashSync(password, await bcrypt.genSalt()),
-      passwordResetToken: null,
+      password_reset_token: null,
     },
   });
 

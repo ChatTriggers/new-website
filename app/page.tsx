@@ -104,7 +104,7 @@ const cachedStats = cached(5 * 60 * 1000, async () => {
       },
     },
     orderBy: {
-      createdAt: "desc",
+      created_at: "desc",
     },
     take: 10,
   });
@@ -124,7 +124,7 @@ const cachedStats = cached(5 * 60 * 1000, async () => {
       },
     },
     orderBy: {
-      updatedAt: "desc",
+      updated_at: "desc",
     },
     take: 10,
   });
@@ -222,7 +222,7 @@ function ModuleCard({ module }: { module: RelationalModule<"releases" | "user"> 
           <Typography sx={{ textAlign: "start" }}>{module.name}</Typography>
           <Box sx={{ display: "flex", gap: 1, verticalAlign: "center" }}>
             <Typography sx={{ fontSize: 12, width: 25 }}>
-              {module.releases.at(-1)?.releaseVersion}
+              {module.releases.at(-1)?.release_version}
             </Typography>
             <Typography sx={{ fontSize: 12 }}> | </Typography>
             <Typography sx={{ fontSize: 12 }}>{module.user.name}</Typography>

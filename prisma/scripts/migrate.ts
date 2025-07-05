@@ -2,7 +2,7 @@ import * as fs from "node:fs/promises";
 import { parseArgs } from "node:util";
 import colors from "ansi-colors";
 import { MultiBar } from "cli-progress";
-import { PrismaClient } from "../generated/client";
+import { PrismaClient, Rank } from "../generated/client";
 import { PrismaClient as PrismaLegacyClient } from "../generated/legacy-client";
 
 const legacyClient = new PrismaLegacyClient();
@@ -20,20 +20,21 @@ let bar = new MultiBar({
 });
 
 const legacyUsers = await legacyClient.users.findMany({});
-const legacyUserIdMap = new Map<number, string>();
+const legacyUserIdMap = new Map<bigint, string>();
 let progress = bar.create(legacyUsers.length, 0);
 
 for (const legacyUser of await legacyClient.users.findMany({})) {
   if (legacyUser.name.length > 32) {
     bar.log(`Warning: Skipping user "${legacyUser.name}" due to name length\n`);
   } else {
+    const rank = Rank[legacyUser.rank];
     const user = await client.user.create({
       data: {
         name: legacyUser.name,
         email: legacyUser.email,
-        emailVerified: false,
+        email_verified: false,
         password: legacyUser.password,
-        rank: legacyUser.rank,
+        rank,
       },
     });
 
@@ -50,7 +51,7 @@ bar = new MultiBar({
 });
 
 const legacyModules = await legacyClient.modules.findMany({});
-const legacyModuleIdMap = new Map<number, string>();
+const legacyModuleIdMap = new Map<bigint, string>();
 progress = bar.create(legacyModules.length, 0);
 
 for (const legacyModule of legacyModules) {
@@ -78,11 +79,11 @@ for (const legacyModule of legacyModules) {
 
   const module = await client.module.create({
     data: {
-      userId,
+      user_id: userId,
       name: legacyModule.name,
       description: legacyModule.description,
       image: imagePath,
-      downloads: legacyModule.downloads,
+      downloads: Number(legacyModule.downloads),
       hidden: legacyModule.hidden,
       tags: legacyModule.tags ?? "",
     },
@@ -98,16 +99,16 @@ for (const legacyModule of legacyModules) {
   for (const legacyRelease of legacyReleases) {
     const release = await client.release.create({
       data: {
-        moduleId: module.id,
-        releaseVersion: legacyRelease.release_version,
-        modVersion: legacyRelease.mod_version,
+        module_id: module.id,
+        release_version: legacyRelease.release_version,
+        mod_version: legacyRelease.mod_version,
         changelog: legacyRelease.changelog,
         downloads: legacyRelease.downloads,
         verified: legacyRelease.verified,
       },
     });
 
-    let uuid = legacyRelease.id.toString("hex");
+    let uuid = legacyRelease.id;
     uuid = `${uuid.substring(0, 8)}-${uuid.substring(8, 12)}-${uuid.substring(12, 16)}-${uuid.substring(16, 20)}-${uuid.substring(20)}`;
 
     const oldPath = `./legacy-storage/${legacyModule.name.toLowerCase()}/${uuid}`;

@@ -9,7 +9,7 @@ export const POST = route(async (req: NextRequest, { params }: SlugProps<"nameOr
   const nameOrId = data.get("nameOrId");
 
   if (!token || typeof token !== "string") throw new ClientError("Missing verification token");
-  const dbUser = await db.user.findFirst({ where: { verificationToken: token } });
+  const dbUser = await db.user.findFirst({ where: { verification_token: token } });
   if (!dbUser || (dbUser.name !== nameOrId && dbUser.id.toString() !== nameOrId))
     throw new ClientError("Invalid verification token or username");
 
@@ -18,8 +18,8 @@ export const POST = route(async (req: NextRequest, { params }: SlugProps<"nameOr
       id: dbUser.id,
     },
     data: {
-      emailVerified: true,
-      verificationToken: null,
+      email_verified: true,
+      verification_token: null,
     },
   });
 

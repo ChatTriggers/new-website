@@ -176,13 +176,13 @@ export const getMany = async (
     addAndCondition({ hidden: false });
   } else if (hidden === Hidden.ONLY) {
     if (session.rank === Rank.default) {
-      addAndCondition({ hidden: true, userId: session.id });
+      addAndCondition({ hidden: true, user_id: session.id });
     } else {
       addAndCondition({ hidden: true });
     }
   } else if (session.rank === Rank.default) {
     addAndCondition({
-      OR: [{ hidden: false }, { userId: session.id }],
+      OR: [{ hidden: false }, { user_id: session.id }],
     });
   }
 
@@ -214,7 +214,7 @@ export const getMany = async (
     } as const;
     if (session) {
       addAndCondition({
-        OR: [condition, { userId: session.id }],
+        OR: [condition, { user_id: session.id }],
       });
     } else {
       addAndCondition(condition);
@@ -229,10 +229,10 @@ export const getMany = async (
       query.orderBy = { downloads: "desc" };
       break;
     case "DATE_CREATED_ASC":
-      query.orderBy = { createdAt: "asc" };
+      query.orderBy = { created_at: "asc" };
       break;
     default:
-      query.orderBy = { createdAt: "desc" };
+      query.orderBy = { created_at: "desc" };
       sort = "DATE_CREATED_DESC";
       break;
   }
@@ -292,8 +292,8 @@ export const findMatchingRelease = async (
 ): Promise<Release | undefined> => {
   const releases = module.releases.map(release => ({
     release,
-    releaseVersion: Version.parseOrThrow(release.releaseVersion),
-    modVersion: Version.parseOrThrow(release.modVersion),
+    releaseVersion: Version.parseOrThrow(release.release_version),
+    modVersion: Version.parseOrThrow(release.mod_version),
   }));
 
   releases.sort((r1, r2) =>

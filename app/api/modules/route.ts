@@ -89,7 +89,7 @@ export const PUT = route(async (req: NextRequest) => {
 
   const module = await db.module.create({
     data: {
-      userId: user.id,
+      user_id: user.id,
       name,
       summary,
       description,
