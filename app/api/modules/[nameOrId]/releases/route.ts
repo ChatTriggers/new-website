@@ -149,11 +149,11 @@ async function saveZipFile(
       "scripts",
       module.name,
       release.id,
-      await zip.generateAsync({ type: "uint8array" }),
+      Buffer.from(await zip.generateAsync({ type: "arraybuffer" })),
     );
 
     // Also save the metadata file separately for quick access
-    await storage.setReleaseFile("metadata", module.name, release.id, metadataStr);
+    await storage.setReleaseFile("metadata", module.name, release.id, Buffer.from(metadataStr));
   } catch (e) {
     await storage.deleteRelease(module.name, release.id);
     throw e;

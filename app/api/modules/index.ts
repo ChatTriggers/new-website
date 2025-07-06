@@ -289,9 +289,8 @@ export const getTagsFromForm = (data: FormData): string[] => {
 };
 
 // TODO: Get rid of this function?
-export const saveImage = async (module: Module, file: string | Blob): Promise<string> => {
-  module.hasImage = true;
-  return await storage.setImage("module", module.name, await saveImageFile(file));
+export const saveImage = async (module: Module, file: string | Blob): Promise<void> => {
+  await storage.setImage("module", module.name, await saveImageFile(file));
 };
 
 export const findMatchingRelease = async (
