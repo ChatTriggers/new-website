@@ -12,17 +12,50 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Add SSH key
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
         with:
-          ssh-private-key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
+          version: 10.12.4  # or your version
 
-      - name: Copy files and deploy
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build standalone
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_EC2_SSH_USERNAME }}@${{ secrets.AWS_EC2_SSH_HOST }} << 'EOF'
-            cd ~/website
-            git pull origin testing
-            docker build -t website .
-            docker stop website || true && docker rm website || true
-            docker run -d --name website -p 80:3000 website
-          EOF
+          pnpm run prisma-generate
+          pnpm build
+
+      - name: Archive standalone output
+        run: |
+          mkdir output
+          cp -r .next/standalone output/standalone
+          cp -r .next/static output/static
+          cp -r public output/public
+          tar -czf output.tar.gz -C output .
+
+      - name: Copy build to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AWS_EC2_SSH_HOST }}
+          username: ${{ secrets.AWS_EC2_SSH_USERNAME }}
+          key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
+          source: "output.tar.gz"
+          target: "~/"
+          timeout: 120s
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_EC2_SSH_HOST }}
+          username: ${{ secrets.AWS_EC2_SSH_USERNAME }}
+          key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd ~
+
+            rm -rf app
+            mkdir -p app
+            tar -xzf output.tar.gz -C app
+
+            pm2 delete website || true
+            pm2 start app/standalone/server.js --name website
