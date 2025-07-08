@@ -131,7 +131,7 @@ async function saveZipFile(
   metadata.version = release.release_version;
   metadata.tags = module.tags ? module.tags.split(",") : undefined;
   metadata.pictureLink = module.hasImage
-    ? await storage.getImageUrl("module", module.name)
+    ? await storage().getImageUrl("module", module.name)
     : undefined;
   metadata.creator = module.user.name;
   metadata.author = undefined;
@@ -145,7 +145,7 @@ async function saveZipFile(
 
   try {
     // Save to storage folder
-    await storage.setReleaseFile(
+    await storage().setReleaseFile(
       "scripts",
       module.name,
       release.id,
@@ -153,9 +153,9 @@ async function saveZipFile(
     );
 
     // Also save the metadata file separately for quick access
-    await storage.setReleaseFile("metadata", module.name, release.id, Buffer.from(metadataStr));
+    await storage().setReleaseFile("metadata", module.name, release.id, Buffer.from(metadataStr));
   } catch (e) {
-    await storage.deleteRelease(module.name, release.id);
+    await storage().deleteRelease(module.name, release.id);
     throw e;
   }
 }

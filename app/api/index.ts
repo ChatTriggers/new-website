@@ -131,7 +131,7 @@ const makePrismaClient = () => {
           compute(module) {
             return async (): Promise<string | undefined> => {
               if (!module.hasImage) return undefined;
-              return storage.getImageUrl("module", module.name);
+              return storage().getImageUrl("module", module.name);
             };
           },
         },

@@ -32,7 +32,7 @@ export async function getScripts(
 
   for (const release of releases) {
     if (release.id === releaseId) {
-      const result = await storage.getReleaseFile("scripts", moduleName, release.id);
+      const result = await storage().getReleaseFile("scripts", moduleName, release.id);
 
       // Increment download counters
       await db.module.update({
@@ -78,6 +78,6 @@ export async function getMetadata(
 
   for (const release of releases) {
     if (release.id === releaseId)
-      return await storage.getReleaseFile("metadata", moduleName, release.id);
+      return await storage().getReleaseFile("metadata", moduleName, release.id);
   }
 }

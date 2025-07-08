@@ -249,16 +249,22 @@ export class S3Storage implements AppStorage {
   }
 }
 
-export function createStorageFromEnv(localStorageEnvVar: string | undefined): AppStorage {
-  try {
-    return FileStorage.fromEnv("STORAGE_LOCAL_DIR");
-  } catch {}
+let _storage: AppStorage | undefined;
 
-  try {
-    return S3Storage.fromEnv();
-  } catch {}
+export function storage(localStorageEnvVar: string = "STORAGE_LOCAL_DIR"): AppStorage {
+  if (!_storage) {
+    _storage = (() => {
+      try {
+        return FileStorage.fromEnv(localStorageEnvVar);
+      } catch {}
 
-  throw new Error(`Must specify ${localStorageEnvVar} or AWS environment variables`);
+      try {
+        return S3Storage.fromEnv();
+      } catch {}
+
+      throw new Error(`Must specify ${localStorageEnvVar} or AWS environment variables`);
+    })();
+  }
+
+  return _storage;
 }
-
-export const storage: AppStorage = createStorageFromEnv("STORAGE_LOCAL_DIR");

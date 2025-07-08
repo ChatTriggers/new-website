@@ -49,7 +49,7 @@ for (const legacyUser of await legacyClient.users.findMany({})) {
   // Migrate image
   const image = await legacyStorage.getImage("user", legacyUser.name);
   if (image) {
-    storage.setImage("user", legacyUser.name, sharp(image));
+    storage().setImage("user", legacyUser.name, sharp(image));
   }
 }
 
@@ -76,7 +76,7 @@ for (const legacyModule of legacyModules) {
 
   const image = await legacyStorage.getImage("module", legacyModule.name);
   if (image) {
-    storage.setImage("module", legacyModule.name, sharp(image));
+    storage().setImage("module", legacyModule.name, sharp(image));
   }
 
   const module = await client.module.create({
@@ -115,8 +115,8 @@ for (const legacyModule of legacyModules) {
     const scripts = await legacyStorage.getReleaseFile("scripts", legacyModule.name, uuid);
     const metadata = await legacyStorage.getReleaseFile("metadata", legacyModule.name, uuid);
 
-    await storage.setReleaseFile("scripts", module.name, release.id, scripts);
-    await storage.setReleaseFile("metadata", module.name, release.id, metadata);
+    await storage().setReleaseFile("scripts", module.name, release.id, scripts);
+    await storage().setReleaseFile("metadata", module.name, release.id, metadata);
 
     if (legacyRelease.verification_token !== null)
       bar.log(

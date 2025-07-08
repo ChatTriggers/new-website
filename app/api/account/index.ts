@@ -16,5 +16,5 @@ export const verify = async (username: string, password: string): Promise<User |
 
 // TODO: Get rid of this function?
 export const saveImage = async (username: string, file: string | Blob): Promise<void> => {
-  storage.setImage("user", username, await saveImageFile(file));
+  storage().setImage("user", username, await saveImageFile(file));
 };

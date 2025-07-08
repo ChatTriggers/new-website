@@ -34,7 +34,7 @@ await db.module.deleteMany({});
 await db.user.deleteMany({});
 
 console.log("Removing all storage");
-await storage.deleteEverything();
+await storage().deleteEverything();
 
 function randomModuleName() {
   let name = "";
@@ -150,7 +150,7 @@ for (let i = 0; i < numUsers; i++) {
   console.log(`Creating user ${username}`);
   const image = await randomImage();
   if (image) {
-    await storage.setImage("user", username, sharp(image));
+    await storage().setImage("user", username, sharp(image));
   }
 
   const user = await db.user.create({
@@ -183,7 +183,7 @@ for (let i = 0; i < numModules; i++) {
   console.log(`Creating module ${moduleName}`);
   const image = await randomImage();
   if (image) {
-    await storage.setImage("module", moduleName, sharp(image));
+    await storage().setImage("module", moduleName, sharp(image));
   }
 
   const module = await db.module.create({
@@ -241,8 +241,8 @@ for (let i = 0; i < numReleases; i++) {
   });
 
   const { scripts, metadata } = await randomScripts(module, release, module.user);
-  await storage.setReleaseFile("scripts", module.name, release.id, scripts);
-  await storage.setReleaseFile("metadata", module.name, release.id, metadata);
+  await storage().setReleaseFile("scripts", module.name, release.id, scripts);
+  await storage().setReleaseFile("metadata", module.name, release.id, metadata);
 
   await db.module.update({
     where: {
