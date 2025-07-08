@@ -40,8 +40,7 @@ jobs:
           username: ${{ secrets.AWS_EC2_SSH_USERNAME }}
           key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
           source: "output.tar.gz"
-          target: "~/"
-          timeout: 120s
+          target: "~/app"
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@v1.0.3
@@ -51,11 +50,11 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
           script: |
             set -e
-            cd ~
+            cd ~/app
 
-            rm -rf app
-            mkdir -p app
-            tar -xzf output.tar.gz -C app
+            rm -rf server
+            mkdir -p server
+            tar -xzf output.tar.gz -C server
 
             pm2 delete website || true
-            pm2 start app/standalone/server.js --name website
+            pm2 start ecosystem.config.js
