@@ -27,11 +27,7 @@ jobs:
 
       - name: Archive standalone output
         run: |
-          mkdir output
-          cp -r .next/standalone output/standalone
-          cp -r .next/static output/static
-          cp -r public output/public
-          tar -czf output.tar.gz -C output .
+          tar -czf next.tar.gz .next
 
       - name: Copy build to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -39,7 +35,7 @@ jobs:
           host: ${{ secrets.AWS_EC2_SSH_HOST }}
           username: ${{ secrets.AWS_EC2_SSH_USERNAME }}
           key: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }}
-          source: "output.tar.gz"
+          source: "next.tar.gz"
           target: "~/app"
 
       - name: Deploy on EC2
@@ -54,7 +50,7 @@ jobs:
 
             rm -rf server
             mkdir -p server
-            tar -xzf output.tar.gz -C server
+            tar -xzf next.tar.gz -C server
 
             pm2 delete website || true
             pm2 start ecosystem.config.js
