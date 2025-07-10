@@ -85,7 +85,7 @@ export class FileStorage implements AppStorage {
     releaseId: string,
     file: Buffer,
   ): Promise<void> {
-    const releaseFolder = `${this.#directory}/modules/${moduleName}/${releaseId}`;
+    const releaseFolder = `${this.#directory}/modules/${moduleName.toLowerCase()}/${releaseId}`;
     await fs.mkdir(releaseFolder, { recursive: true });
     const fileName = type === "scripts" ? "scripts.zip" : "metadata.json";
     await fs.writeFile(`${releaseFolder}/${fileName}`, new Uint8Array(file));
@@ -139,7 +139,7 @@ export class S3Storage implements AppStorage {
     const response = await this.#client.send(
       new GetObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/images/${type}s/${name}.png`,
+        Key: `/public/images/${type}s/${name.toLowerCase()}.png`,
       }),
     );
 
@@ -159,7 +159,7 @@ export class S3Storage implements AppStorage {
     const response = await this.#client.send(
       new GetObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/modules/${moduleName}/${releaseId}/${fileName}`,
+        Key: `/public/modules/${moduleName.toLowerCase()}/${releaseId}/${fileName}`,
       }),
     );
 
@@ -174,7 +174,7 @@ export class S3Storage implements AppStorage {
     const response = await this.#client.send(
       new PutObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/images/${type}s/${name}.png`,
+        Key: `/public/images/${type}s/${name.toLowerCase()}.png`,
         Body: await file.toBuffer(),
         ACL: "public-read",
       }),
@@ -195,7 +195,7 @@ export class S3Storage implements AppStorage {
     const response = await this.#client.send(
       new PutObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/modules/${moduleName}/${releaseId}/${fileName}`,
+        Key: `/public/modules/${moduleName.toLowerCase()}/${releaseId}/${fileName}`,
         Body: file,
       }),
     );

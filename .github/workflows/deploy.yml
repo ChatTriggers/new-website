@@ -27,7 +27,9 @@ jobs:
 
       - name: Archive standalone output
         run: |
-          tar -czf next.tar.gz .next
+          cp -r public .next/standalone
+          cp -r .next/static .next/standalone/.next
+          tar -czf next.tar.gz .next/standalone
 
       - name: Copy build to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -48,9 +50,8 @@ jobs:
             set -e
             cd ~/app
 
-            rm -rf server
-            mkdir -p server
-            tar -xzf next.tar.gz -C server
+            rm -rf .next
+            tar -xzf next.tar.gz
 
             pm2 delete website || true
             pm2 start ecosystem.config.js
