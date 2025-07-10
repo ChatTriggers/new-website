@@ -15,7 +15,7 @@ model Module {
   name        String    @unique @db.VarChar(64)
   summary     String?   @db.VarChar(300)
   description String?   @db.Text
-  hasImage    Boolean   @default(false)
+  has_image   Boolean   @default(false)
   downloads   Int       @default(0)
   hidden      Boolean   @default(false)
   tags        String?   @db.VarChar(200) // comma-separated array
@@ -55,7 +55,7 @@ model User {
   last_name_change_time DateTime?
   verification_token    String?
   password_reset_token  String?
-  hasImage              Boolean        @default(false)
+  has_image             Boolean        @default(false)
   rank                  Rank           @default(default)
   notifications         Notification[]
   modules               Module[]
@@ -89,6 +89,25 @@ model Notification {
   created_at  DateTime @default(now())
 
   @@map("notifications")
+}
+
+model TrackedTimestamp {
+  id           Int          @id(map: "idx_24708_primary") @default(autoincrement())
+  user         Int
+  time         DateTime     @db.Date
+  tracked_user TrackedUser  @relation(fields: [user], references: [id], onUpdate: Restrict, map: "trackedtimestamps_ibfk_1")
+
+  @@index([user], map: "idx_24708_user")
+  @@map("trackedtimestamps")
+}
+
+model TrackedUser {
+  id                 Int                 @id(map: "idx_24713_primary") @default(autoincrement())
+  hash               String              @unique(map: "idx_24713_hash") @db.VarChar(100)
+  version            String              @default("2.0.0") @db.VarChar(20)
+  tracked_timestamps TrackedTimestamp[]
+
+  @@map("trackedusers")
 }
 
 enum EmailType {

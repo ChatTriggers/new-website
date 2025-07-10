@@ -164,7 +164,7 @@ for (let i = 0; i < numUsers; i++) {
         { probability: 0.1 },
       ),
       password_reset_token: null,
-      hasImage: !!image,
+      has_image: !!image,
       verification_token: null,
       rank: faker.helpers.enumValue(Rank),
     },
@@ -191,7 +191,7 @@ for (let i = 0; i < numModules; i++) {
       name: moduleName,
       summary: faker.helpers.maybe(faker.lorem.sentence, { probability: 0.7 }),
       description: faker.helpers.maybe(faker.lorem.text, { probability: 0.7 }),
-      hasImage: !!image,
+      has_image: !!image,
       tags: faker.helpers
         .maybe(() => faker.helpers.arrayElements(validTags), { probability: 0.5 })
         ?.join(","),

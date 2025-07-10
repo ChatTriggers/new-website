@@ -130,7 +130,7 @@ async function saveZipFile(
   metadata.name = module.name;
   metadata.version = release.release_version;
   metadata.tags = module.tags ? module.tags.split(",") : undefined;
-  metadata.pictureLink = module.hasImage
+  metadata.pictureLink = module.has_image
     ? await storage().getImageUrl("module", module.name)
     : undefined;
   metadata.creator = module.user.name;

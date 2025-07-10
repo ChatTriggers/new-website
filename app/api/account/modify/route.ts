@@ -57,7 +57,7 @@ export const POST = route(async (req: NextRequest) => {
       where: { id: user.id },
       data: {
         name: username,
-        hasImage: !!image,
+        has_image: !!image,
         last_name_change_time: new Date(),
       },
     });

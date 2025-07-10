@@ -136,7 +136,7 @@ export default function ModuleForm({ editingModule, availableTags, onSubmit }: P
   const [createLoading, setCreateLoading] = useState(false);
 
   const [imageUrl, setImageUrl] = useState(
-    editingModule?.hasImage
+    editingModule?.has_image
       ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${editingModule.name}/image`
       : undefined,
   );

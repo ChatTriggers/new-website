@@ -33,7 +33,7 @@ export const onModuleCreated = async (module: RelationalModule<"user">) => {
 
   if (module.summary) embed.addFields({ name: "Summary", value: module.summary });
 
-  if (module.hasImage) {
+  if (module.has_image) {
     embed.setImage(`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${module.name}/image`);
   }
 

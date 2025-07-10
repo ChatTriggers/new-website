@@ -93,7 +93,7 @@ export const PUT = route(async (req: NextRequest) => {
       name,
       summary,
       description,
-      hasImage: !!image,
+      has_image: !!image,
       tags: tags.join(","),
       hidden: hidden === "1" || hidden === "true",
     },

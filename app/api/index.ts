@@ -8,7 +8,7 @@ export interface PublicModule {
   name: string;
   summary: string | null;
   description: string | null;
-  hasImage: boolean;
+  has_image: boolean;
   downloads: number;
   hidden?: boolean;
   tags?: string[];
@@ -38,7 +38,7 @@ export interface PublicNotification {
 export interface PublicUser {
   id: string;
   name: string;
-  hasImage: boolean;
+  has_image: boolean;
   rank: Rank;
   created_at: number;
 }
@@ -79,7 +79,7 @@ const makePrismaClient = () => {
             user_id: true,
             summary: true,
             description: true,
-            hasImage: true,
+            has_image: true,
             downloads: true,
             hidden: true,
             tags: true,
@@ -112,7 +112,7 @@ const makePrismaClient = () => {
                 name: module.name,
                 summary: module.summary,
                 description: module.description,
-                hasImage: module.hasImage,
+                has_image: module.has_image,
                 downloads: module.downloads,
                 hidden: module.hidden || undefined,
                 tags: module.tags && module.tags.length > 0 ? module.tags.split(",") : undefined,
@@ -125,12 +125,12 @@ const makePrismaClient = () => {
         },
         imageDataUrl: {
           needs: {
-            hasImage: true,
+            has_image: true,
             name: true,
           },
           compute(module) {
             return async (): Promise<string | undefined> => {
-              if (!module.hasImage) return undefined;
+              if (!module.has_image) return undefined;
               return storage().getImageUrl("module", module.name);
             };
           },
@@ -185,7 +185,7 @@ const makePrismaClient = () => {
           needs: {
             id: true,
             name: true,
-            hasImage: true,
+            has_image: true,
             rank: true,
             created_at: true,
           },
@@ -193,7 +193,7 @@ const makePrismaClient = () => {
             return (): PublicUser => ({
               id: user.id,
               name: user.name,
-              hasImage: user.hasImage,
+              has_image: user.has_image,
               rank: user.rank,
               created_at: user.created_at.getTime(),
             });
@@ -203,7 +203,7 @@ const makePrismaClient = () => {
           needs: {
             id: true,
             name: true,
-            hasImage: true,
+            has_image: true,
             rank: true,
             created_at: true,
 
@@ -215,7 +215,7 @@ const makePrismaClient = () => {
             return async (): Promise<AuthenticatedUser> => ({
               id: user.id,
               name: user.name,
-              hasImage: user.hasImage,
+              has_image: user.has_image,
               rank: user.rank,
               created_at: user.created_at.getTime(),
 

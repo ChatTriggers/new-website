@@ -44,7 +44,7 @@ function UserHeader({ user, totalDownloads, authenticated }: UserProps) {
   const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
 
-  const defaultImagePath = user.hasImage
+  const defaultImagePath = user.has_image
     ? `${process.env.NEXT_PUBLIC_WEB_ROOT}/api/users/${user.name}/image`
     : null;
   const [avatarSrc, setAvatarSrc] = useState(defaultImagePath);

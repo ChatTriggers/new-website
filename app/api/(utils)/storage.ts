@@ -68,7 +68,9 @@ export class FileStorage implements AppStorage {
     releaseId: string,
   ): Promise<Buffer> {
     const fileName = type === "scripts" ? "scripts.zip" : "metadata.json";
-    return await fs.readFile(`${this.#directory}/modules/${moduleName}/${releaseId}/${fileName}`);
+    return await fs.readFile(
+      `${this.#directory}/modules/${moduleName.toLowerCase()}/${releaseId}/${fileName}`,
+    );
   }
 
   async setImage(type: "module" | "user", name: string, file: sharp.Sharp): Promise<void> {

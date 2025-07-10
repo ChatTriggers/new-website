@@ -82,7 +82,7 @@ export const PATCH = route(async (req: NextRequest, { params }: SlugProps<"nameO
     data: {
       summary,
       description,
-      hasImage: !!image,
+      has_image: !!image,
       hidden,
       tags,
     },

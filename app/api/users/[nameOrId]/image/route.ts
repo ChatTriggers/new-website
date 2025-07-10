@@ -11,7 +11,7 @@ export const GET = route(async (_req: NextRequest, { params }: SlugProps<"nameOr
   });
   if (!user) return new Response("User not found", { status: 404 });
 
-  if (user.hasImage) {
+  if (user.has_image) {
     return Response.redirect(storage().getImageUrl("user", user.name));
   }
 
