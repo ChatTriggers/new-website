@@ -318,7 +318,7 @@ export default async function Page() {
               startDecorator={<Download />}
               sx={{ fontSize: 18 }}
               component="a"
-              href="#download"
+              href="#downloads"
             >
               Download
             </Button>
