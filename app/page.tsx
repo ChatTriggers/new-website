@@ -4,6 +4,7 @@ import { Octokit } from "@octokit/rest";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Fragment } from "react";
+import FallbackImage from "./(utils)/FallbackImage";
 import type { AuthenticatedUser, RelationalModule } from "./api";
 import { cached, db, getSessionFromCookies } from "./api";
 import { getStats } from "./api/statistics";
@@ -216,7 +217,24 @@ function ModuleCard({ module }: { module: RelationalModule<"releases" | "user"> 
           alignItems: "center",
         }}
       >
-        <Box>
+        <FallbackImage
+          src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${module.name}/icon`}
+          fallbackSrc={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${module.name}/image`}
+          alt=""
+          width={50}
+          height={50}
+        />
+        {/* <img
+          src={`${process.env.NEXT_PUBLIC_WEB_ROOT}/api/modules/${module.name}/icon`}
+          style={{
+            marginRight: 10,
+            height: 50,
+            objectFit: "contain",
+            width: 50,
+            borderRadius: 6,
+          }}
+        /> */}
+        <Box sx={{ flexGrow: 2, ml: 2 }}>
           <Typography sx={{ textAlign: "start" }}>{module.name}</Typography>
           <Box sx={{ display: "flex", gap: 1, verticalAlign: "center" }}>
             <Typography sx={{ fontSize: 12, width: 25 }}>
@@ -290,7 +308,7 @@ export default async function Page() {
         <Box
           sx={{
             width: "100%",
-            maxWidth: 1000,
+            maxWidth: 1300,
             display: "flex",
             alignItems: "center",
             justifyItems: "center",

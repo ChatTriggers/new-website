@@ -6,6 +6,15 @@ export default {
   experimental: {
     serverComponentsExternalPackages: ["@discordjs"],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+      },
+    ],
+  },
   webpack: config => {
     config.experiments = {
       ...config.experiments,

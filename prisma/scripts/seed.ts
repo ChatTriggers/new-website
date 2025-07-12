@@ -32,6 +32,8 @@ await db.notification.deleteMany({});
 await db.release.deleteMany({});
 await db.module.deleteMany({});
 await db.user.deleteMany({});
+await db.trackedTimestamp.deleteMany({});
+await db.trackedUser.deleteMany({});
 
 console.log("Removing all storage");
 await storage().deleteEverything();
@@ -56,6 +58,17 @@ async function randomImage() {
   return await faker.helpers.maybe(
     async () => {
       const url = faker.image.url();
+      const image = await fetch(url);
+      return await image.arrayBuffer();
+    },
+    { probability: 0.3 },
+  );
+}
+
+async function randomIcon() {
+  return await faker.helpers.maybe(
+    async () => {
+      const url = faker.image.url({ width: 100, height: 100 });
       const image = await fetch(url);
       return await image.arrayBuffer();
     },
@@ -143,7 +156,7 @@ const validTags = (await fs.readFile("./public/tags.txt")).toString().split("\n"
 // Generate random users
 const userIds = new Set<string>();
 const nonDefaultUserIds = new Set<string>();
-const numUsers = faker.number.int({ min: 15, max: 30 });
+const numUsers = faker.number.int({ min: 15, max: 35 });
 
 for (let i = 0; i < numUsers; i++) {
   const username = faker.internet.userName();
@@ -176,14 +189,18 @@ for (let i = 0; i < numUsers; i++) {
 
 // Generate random modules
 const moduleIds = new Set<string>();
-const numModules = numUsers + faker.number.int({ min: 5, max: 20 });
+const numModules = numUsers + faker.number.int({ min: 50, max: 100 });
 
 for (let i = 0; i < numModules; i++) {
   const moduleName = randomModuleName();
   console.log(`Creating module ${moduleName}`);
   const image = await randomImage();
   if (image) {
-    await storage().setImage("module", moduleName, sharp(image));
+    await storage().setImage("module-image", moduleName, sharp(image));
+  }
+  const icon = await randomIcon();
+  if (icon) {
+    await storage().setImage("module-icon", moduleName, sharp(icon));
   }
 
   const module = await db.module.create({
@@ -192,6 +209,7 @@ for (let i = 0; i < numModules; i++) {
       summary: faker.helpers.maybe(faker.lorem.sentence, { probability: 0.7 }),
       description: faker.helpers.maybe(faker.lorem.text, { probability: 0.7 }),
       has_image: !!image,
+      has_icon: !!icon,
       tags: faker.helpers
         .maybe(() => faker.helpers.arrayElements(validTags), { probability: 0.5 })
         ?.join(","),
@@ -205,7 +223,7 @@ for (let i = 0; i < numModules; i++) {
 }
 
 // Generate random releases
-const numReleases = numModules + faker.number.int({ min: 0, max: 10 });
+const numReleases = Math.round(numModules * 2);
 
 for (let i = 0; i < numReleases; i++) {
   const moduleId = faker.helpers.arrayElement(Array.from(moduleIds));

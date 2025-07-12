@@ -16,6 +16,7 @@ model Module {
   summary     String?   @db.VarChar(300)
   description String?   @db.Text
   has_image   Boolean   @default(false)
+  has_icon    Boolean   @default(false)
   downloads   Int       @default(0)
   hidden      Boolean   @default(false)
   tags        String?   @db.VarChar(200) // comma-separated array

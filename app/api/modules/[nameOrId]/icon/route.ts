@@ -7,14 +7,14 @@ export const GET = route(async (_req: NextRequest, { params }: SlugProps<"nameOr
   const module = await modules.getOne(params.nameOrId);
   if (!module) throw new NotFoundError("Module not found");
 
-  if (module.has_image) {
-    const url = storage().getImageUrl("module-image", module.name);
+  if (module.has_icon) {
+    const url = storage().getImageUrl("module-icon", module.name);
     if (url) {
       return Response.redirect(url);
     }
-    const image = await storage().getImage("module-image", module.name);
-    if (image) {
-      return new Response(image);
+    const icon = await storage().getImage("module-icon", module.name);
+    if (icon) {
+      return new Response(icon);
     }
   }
 

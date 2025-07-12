@@ -1,6 +1,5 @@
 import { PrismaClient, Rank } from "app/../prisma/generated/client";
 import type { Session } from "app/api";
-import { storage } from "app/api/(utils)";
 
 export interface PublicModule {
   id: string;
@@ -9,6 +8,7 @@ export interface PublicModule {
   summary: string | null;
   description: string | null;
   has_image: boolean;
+  has_icon: boolean;
   downloads: number;
   hidden?: boolean;
   tags?: string[];
@@ -80,6 +80,7 @@ const makePrismaClient = () => {
             summary: true,
             description: true,
             has_image: true,
+            has_icon: true,
             downloads: true,
             hidden: true,
             tags: true,
@@ -113,6 +114,7 @@ const makePrismaClient = () => {
                 summary: module.summary,
                 description: module.description,
                 has_image: module.has_image,
+                has_icon: module.has_icon,
                 downloads: module.downloads,
                 hidden: module.hidden || undefined,
                 tags: module.tags && module.tags.length > 0 ? module.tags.split(",") : undefined,
@@ -120,18 +122,6 @@ const makePrismaClient = () => {
                 created_at: module.created_at.getTime(),
                 updated_at: module.updated_at.getTime(),
               };
-            };
-          },
-        },
-        imageDataUrl: {
-          needs: {
-            has_image: true,
-            name: true,
-          },
-          compute(module) {
-            return async (): Promise<string | undefined> => {
-              if (!module.has_image) return undefined;
-              return storage().getImageUrl("module", module.name);
             };
           },
         },

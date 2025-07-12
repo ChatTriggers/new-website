@@ -82,9 +82,9 @@ for (const legacyModule of legacyModules) {
     );
   }
 
-  const image = await legacyStorage.getImage("module", legacyModule.name);
-  if (image) {
-    storage().setImage("module", legacyModule.name, sharp(image));
+  if (legacyModule.image) {
+    const image = await fetch(legacyModule.image);
+    storage().setImage("module-image", legacyModule.name, sharp(await image.arrayBuffer()));
   }
 
   const module = await client.module.create({

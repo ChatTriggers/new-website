@@ -10,19 +10,18 @@ import {
 } from "@aws-sdk/client-s3";
 import type sharp from "sharp";
 
+type ImageType = "module-image" | "module-icon" | "user";
+type FileType = "scripts" | "metadata";
+
 interface AppStorage {
-  getImageUrl(type: "module" | "user", name: string): string;
-  getImage(type: "module" | "user", name: string): Promise<Buffer | undefined>;
-  getReleaseFile(
-    type: "scripts" | "metadata",
-    moduleName: string,
-    releaseId: string,
-  ): Promise<Buffer>;
+  getImageUrl(type: ImageType, name: string): string | undefined;
+  getImage(type: ImageType, name: string): Promise<Buffer | undefined>;
+  getReleaseFile(type: FileType, moduleName: string, releaseId: string): Promise<Buffer>;
 
   // TODO: Don't share sharp.Sharp
-  setImage(type: "module" | "user", name: string, file: sharp.Sharp): Promise<void>;
+  setImage(type: ImageType, name: string, file: sharp.Sharp): Promise<void>;
   setReleaseFile(
-    type: "scripts" | "metadata",
+    type: FileType,
     moduleName: string,
     releaseId: string,
     file: Buffer,
@@ -49,38 +48,38 @@ export class FileStorage implements AppStorage {
     this.#directory = directory;
   }
 
-  getImageUrl(type: "module" | "user", name: string): string {
-    const dirName = type === "module" ? "modules" : "users";
-    return `${this.#directory}/${dirName}/${name}/image.png`;
+  getImageUrl(type: ImageType, name: string): string | undefined {
+    // No external URL
+    return undefined;
   }
 
-  async getImage(type: "module" | "user", name: string): Promise<Buffer | undefined> {
+  async getImage(type: ImageType, name: string): Promise<Buffer | undefined> {
     try {
-      return await fs.readFile(this.getImageUrl(type, name));
+      const dirName = type === "user" ? "users" : "modules";
+      const fileName = type === "module-icon" ? "icon.png" : "image.png";
+      return await fs.readFile(`${this.#directory}/${dirName}/${name.toLowerCase()}/${fileName}`);
     } catch {
       return undefined;
     }
   }
 
-  async getReleaseFile(
-    type: "scripts" | "metadata",
-    moduleName: string,
-    releaseId: string,
-  ): Promise<Buffer> {
+  async getReleaseFile(type: FileType, moduleName: string, releaseId: string): Promise<Buffer> {
     const fileName = type === "scripts" ? "scripts.zip" : "metadata.json";
     return await fs.readFile(
       `${this.#directory}/modules/${moduleName.toLowerCase()}/${releaseId}/${fileName}`,
     );
   }
 
-  async setImage(type: "module" | "user", name: string, file: sharp.Sharp): Promise<void> {
-    const dirName = type === "module" ? "modules" : "users";
+  async setImage(type: ImageType, name: string, file: sharp.Sharp): Promise<void> {
+    name = name.toLowerCase();
+    const dirName = type === "user" ? "users" : "modules";
+    const fileName = type === "module-icon" ? "icon.png" : "image.png";
     await fs.mkdir(`${this.#directory}/${dirName}/${name}`, { recursive: true });
-    file.toFile(`${this.#directory}/${dirName}/${name}/image.png`);
+    file.toFile(`${this.#directory}/${dirName}/${name}/${fileName}`);
   }
 
   async setReleaseFile(
-    type: "scripts" | "metadata",
+    type: FileType,
     moduleName: string,
     releaseId: string,
     file: Buffer,
@@ -92,7 +91,7 @@ export class FileStorage implements AppStorage {
   }
 
   async deleteRelease(moduleName: string, releaseId: string): Promise<void> {
-    const releaseFolder = `${this.#directory}/modules/${moduleName}/${releaseId}`;
+    const releaseFolder = `${this.#directory}/modules/${moduleName.toLowerCase()}/${releaseId}`;
     await fs.rm(releaseFolder, { recursive: true });
   }
 
@@ -131,15 +130,20 @@ export class S3Storage implements AppStorage {
     this.#bucketName = bucketName;
   }
 
-  getImageUrl(type: "module" | "user", name: string): string {
-    return `https://${this.#bucketName}.s3.amazonaws.com//public/images/${type}s/${name}.png`;
+  getImageUrl(type: ImageType, name: string): string {
+    const dirName = type === "user" ? "users" : "modules";
+    const fileName = type === "module-icon" ? "icon.png" : "image.png";
+    return `https://${this.#bucketName}.s3.amazonaws.com//public/${dirName}/${name.toLowerCase()}/${fileName}`;
   }
 
-  async getImage(type: "module" | "user", name: string): Promise<Buffer | undefined> {
+  async getImage(type: ImageType, name: string): Promise<Buffer | undefined> {
+    const dirName = type === "user" ? "users" : "modules";
+    const fileName = type === "module-icon" ? "icon.png" : "image.png";
+
     const response = await this.#client.send(
       new GetObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/images/${type}s/${name.toLowerCase()}.png`,
+        Key: `/public/${dirName}/${name.toLowerCase()}/${fileName}`,
       }),
     );
 
@@ -170,11 +174,14 @@ export class S3Storage implements AppStorage {
     return Buffer.from(await response.Body.transformToByteArray());
   }
 
-  async setImage(type: "module" | "user", name: string, file: sharp.Sharp): Promise<void> {
+  async setImage(type: ImageType, name: string, file: sharp.Sharp): Promise<void> {
+    const dirName = type === "user" ? "users" : "modules";
+    const fileName = type === "module-icon" ? "icon.png" : "image.png";
+
     const response = await this.#client.send(
       new PutObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/images/${type}s/${name.toLowerCase()}.png`,
+        Key: `/public/${dirName}/${name.toLowerCase()}/${fileName}`,
         Body: await file.toBuffer(),
         ACL: "public-read",
       }),
@@ -209,7 +216,7 @@ export class S3Storage implements AppStorage {
     const response = await this.#client.send(
       new DeleteObjectCommand({
         Bucket: this.#bucketName,
-        Key: `/public/modules/${moduleName}/${releaseId}`,
+        Key: `/public/modules/${moduleName.toLowerCase()}/${releaseId}`,
       }),
     );
 
